@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ExUI</title>
+        <link rel="stylesheet" type="text/css"  href="{{ url_for('static', filename='style.css') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='gfx/favicon.png') }}">
+        {% include 'svg_icons.html' %}
+    </head>
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <div id="page-disabled">
+            <div id="busy" class="busy">
+                <p>Please wait...</p>
+                <div id="busy-anim"></div>
+            </div>
+            <div id="loading" class="loading">
+                <p>Loading</p>
+                <div id="loading-progress-container">
+                    <div id="loading-progress"></div>
+                </div>
+            </div>
+        </div>
+        <div id="page-enabled">
+            <div class="vflex">
+                <div id="mainmenu" class="mainmenu">
+                </div>
+                <div id="mainbody" class="mainbody">
+                    <div id="model-page" class="model-page hidden">
+                        <div class="vflex">
+                            <div id="model-list" class="model-list"></div>
+                            <div id="model-view" class="model-view"></div>
+                        </div>
+                    </div>
+                    <div id="chat-page" class="chat-page hidden">
+                        <div class="vflex">
+                            <div class="hflex">
+                                <div id="session-list" class="session-list"></div>
+                                <div id="session-list-controls" class="session-list-controls"></div>
+                            </div>
+                            <div class="hflex">
+                                <div id="session-view" class="session-view">
+                                    <div id="session-view-history" class="session-view-history"></div>
+                                    <div class="session-input-surround">
+                                        <textarea id="session-input" class="session-input" placeholder="Type here..." rows="1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="session-settings" class="session-settings">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="{{ url_for('static', filename='controls.js') }}"></script>
+    </body>
+</html>
