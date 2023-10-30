@@ -8,13 +8,7 @@
 
 ## Running locally
 
-First, make sure you have exllamav2 installed:
-
-```
-pip install exllamav2
-```
-
-Next, clone this repository and install requirements:
+First, clone this repository and install requirements:
 
 ```
 git clone https://github.com/turboderp/exui
