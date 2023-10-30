@@ -131,7 +131,7 @@ def prepare_draft_model(model):
     if model["draft_enabled"]:
 
         prep_draft_config = ExLlamaV2Config()
-        prep_draft_config.model_dir = model["draft_model_directory"]
+        prep_draft_config.model_dir = os.path.expanduser(model["draft_model_directory"])
         try:
             prep_draft_config.prepare()
             model["draft_config_status"] = "ok"
@@ -158,7 +158,7 @@ def prepare_draft_model(model):
 def prepare_model(model):
 
     prep_config = ExLlamaV2Config()
-    prep_config.model_dir = model["model_directory"]
+    prep_config.model_dir = os.path.expanduser(model["model_directory"])
 
     try:
         prep_config.prepare()
@@ -210,7 +210,7 @@ class ModelContainer:
         self.model_dict = model
 
         self.config = ExLlamaV2Config()
-        self.config.model_dir = model["model_directory"]
+        self.config.model_dir = os.path.expanduser(model["model_directory"])
         self.config.prepare()
 
         self.config.max_seq_len = model["seq_len"]
@@ -224,7 +224,7 @@ class ModelContainer:
         if self.draft_enabled:
 
             self.draft_config = ExLlamaV2Config()
-            self.draft_config.model_dir = model["draft_model_directory"]
+            self.draft_config.model_dir = os.path.expanduser(model["draft_model_directory"])
             self.draft_config.prepare()
 
             self.draft_config.max_seq_len = model["seq_len"]
