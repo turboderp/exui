@@ -2,7 +2,7 @@
 
 ## Overview of features
 
-- Save multiple model configurations at once and save them between sessions for easier multi-model loading
+- Save multiple model configurations at once and persist them between sessions for easier multi-model loading
 - Maintain several chats at once with individual chat sessions
 - Supports latest ExLlamaV2 models
 
