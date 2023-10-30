@@ -1,4 +1,4 @@
-import time
+import time, os
 
 class MultiTimer:
 
@@ -22,5 +22,10 @@ class MultiTimer:
 
     def stop(self):
         self.set_stage("")
+
+
+def expanduser(path):
+    if path is None or path.strip() == "": return path
+    return os.path.expanduser(path)
 
 

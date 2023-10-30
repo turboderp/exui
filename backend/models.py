@@ -18,6 +18,7 @@ from exllamav2.generator import(
 from exllamav2.attn import ExLlamaV2Attention
 # from exllamav2.util import list_live_tensors
 from backend.config import config_filename
+from backend.util import *
 
 auto_split_reserve_bytes = 512 * 1024**2
 
@@ -131,7 +132,7 @@ def prepare_draft_model(model):
     if model["draft_enabled"]:
 
         prep_draft_config = ExLlamaV2Config()
-        prep_draft_config.model_dir = os.path.expanduser(model["draft_model_directory"])
+        prep_draft_config.model_dir = expanduser(model["draft_model_directory"])
         try:
             prep_draft_config.prepare()
             model["draft_config_status"] = "ok"
@@ -158,7 +159,7 @@ def prepare_draft_model(model):
 def prepare_model(model):
 
     prep_config = ExLlamaV2Config()
-    prep_config.model_dir = os.path.expanduser(model["model_directory"])
+    prep_config.model_dir = expanduser(model["model_directory"])
 
     try:
         prep_config.prepare()
@@ -210,7 +211,7 @@ class ModelContainer:
         self.model_dict = model
 
         self.config = ExLlamaV2Config()
-        self.config.model_dir = os.path.expanduser(model["model_directory"])
+        self.config.model_dir = expanduser(model["model_directory"])
         self.config.prepare()
 
         self.config.max_seq_len = model["seq_len"]
@@ -224,7 +225,7 @@ class ModelContainer:
         if self.draft_enabled:
 
             self.draft_config = ExLlamaV2Config()
-            self.draft_config.model_dir = os.path.expanduser(model["draft_model_directory"])
+            self.draft_config.model_dir = expanduser(model["draft_model_directory"])
             self.draft_config.prepare()
 
             self.draft_config.max_seq_len = model["seq_len"]
