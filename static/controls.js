@@ -74,6 +74,11 @@ let instructColors = [
 ];
 
 let statsvisible = false;
+let smoothscroll = true;
+
+function toggleSmoothScroll() {
+    smoothscroll = !smoothscroll;
+}
 
 function newDiv(className = null, id = null, html = null, parent = null, editFunc = null) {
 
@@ -1590,6 +1595,7 @@ function populateSessionSettings(settings, prompt_formats) {
     //nd.appendChild(document.createElement("p"));
 
     createSessionControlCheckbox(nd, "cb-show-stats", "Show generation stats", statsvisible, showHideStats);
+    createSessionControlCheckbox(nd, "cb-smooth-scroll", "Smooth scrolling", smoothscroll, toggleSmoothScroll);
 }
 
 function showHideStats() {
@@ -1923,8 +1929,10 @@ function scrollToBottom() {
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             const element = document.getElementById('session-view-history');
-            element.scroll({ top: element.scrollHeight, behavior: 'smooth' });
-            element.scroll({ top: element.scrollHeight, behavior: 'smooth' }); // ??
+            smoothscroll = document.getElementById("cb-smooth-scroll").checked;
+            let behavior = smoothscroll ? 'smooth' : 'auto';
+            element.scroll({ top: element.scrollHeight, behavior: behavior });
+            element.scroll({ top: element.scrollHeight, behavior: behavior });
         });
     });
 }
