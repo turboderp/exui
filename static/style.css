@@ -543,7 +543,7 @@ body {
     flex-direction: column;
     width: 250px;
     min-width: 250px;
-    height: calc(100vh - 90px);
+    height: calc(100vh - 140px);
     flex-grow: 0;
     padding: 0px;
     padding-top: 10px;
@@ -597,9 +597,11 @@ body {
     min-width: 250px;
     padding-left: 15px;
     padding-top: 15px;
+    padding-bottom: 10px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    justify-content: end;
 }
 
 .session-view {
