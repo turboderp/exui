@@ -3,23 +3,12 @@
     <head>
         <title>ExUI</title>
         <link rel="stylesheet" type="text/css"  href="{{ url_for('static', filename='style.css') }}">
+        <link rel="stylesheet" type="text/css"  href="{{ url_for('static', filename='controls/spinner.css') }}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='gfx/favicon.png') }}">
         {% include 'svg_icons.html' %}
     </head>
     <body>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <div id="page-disabled">
-            <div id="busy" class="busy">
-                <p>Please wait...</p>
-                <div id="busy-anim"></div>
-            </div>
-            <div id="loading" class="loading">
-                <p>Loading</p>
-                <div id="loading-progress-container">
-                    <div id="loading-progress"></div>
-                </div>
-            </div>
-        </div>
         <div id="page-enabled">
             <div class="vflex">
                 <div id="mainmenu" class="mainmenu">
@@ -52,6 +41,9 @@
                 </div>
             </div>
         </div>
+        <script src="{{ url_for('static', filename='roles.js') }}"></script>
+        <script src="{{ url_for('static', filename='globals.js') }}"></script>
+        <script src="{{ url_for('static', filename='controls/overlay.js') }}"></script>
         <script src="{{ url_for('static', filename='controls.js') }}"></script>
     </body>
 </html>

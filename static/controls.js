@@ -1,22 +1,5 @@
 
-const noop = () => {};
-
 createUIElements();
-
-let currentModelUUID = null;
-let loadedModelUUID = null;
-let failedModelUUID = null;
-let failedModelError = null;
-
-let currentSessionUUID = null;
-let currentSettings = null;
-
-let currentStreamingBlock = null;
-
-let keyboard_disabled = false;
-document.addEventListener("keydown", function (e) {
-    if (keyboard_disabled) e.preventDefault();
-});
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -37,41 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let textbox_initial = "";
-
-let roleAvatars = [
-    "/static/gfx/avatar_frog.png",
-    "/static/gfx/avatar_cat.png",
-    "/static/gfx/avatar_dog.png",
-    "/static/gfx/avatar_monke.png",
-    "/static/gfx/avatar_unicorn.png",
-    "/static/gfx/avatar_squirrel.png",
-    "/static/gfx/avatar_penguin.png",
-    "/static/gfx/avatar_notcat.png"
-];
-
-let roleColors = [
-    "rgba(167, 231, 0, 255)",
-    "rgba(136, 70, 104, 255)",
-    "rgba(58, 90, 208, 255)",
-    "rgba(215, 86, 98, 255)",
-    "rgba(220, 170, 62, 255)",
-    "rgba(40, 170, 170, 255)",
-    "rgba(170, 170, 170, 255)",
-    "rgba(120, 120, 120, 255)"
-];
-
-let fallbackAvatar = "/static/gfx/avatar_notcat.png";
-let fallbackColor = "rgba(120, 120, 120, 255)";
-
-let instructAvatars = [
-    "/static/gfx/avatar_frog.png",
-    "/static/gfx/avatar_cat.png",
-];
-
-let instructColors = [
-    "rgba(167, 231, 0, 255)",
-    "rgba(136, 70, 104, 255)",
-];
 
 let statsvisible = false;
 let smoothscroll = true;
@@ -646,31 +594,6 @@ function createUIElements() {
     def.click();
 }
 
-function disablePage(mode) {
-
-    let page_disabled = document.getElementById('page-disabled');
-    let busy = document.getElementById('busy');
-    let loading = document.getElementById('loading');
-    if (mode == "busy") busy.style.display = 'flex'; else busy.style.display = 'none';
-    if (mode == "loading") loading.style.display = 'flex'; else loading.style.display = 'none';
-    page_disabled.style.display = 'flex';
-    keyboard_disabled = true;
-}
-
-function enablePage() {
-
-    let page_disabled = document.getElementById('page-disabled');
-    page_disabled.style.display = 'none';
-    keyboard_disabled = false;
-}
-
-function setLoadingProgress(a, b) {
-
-    var progressBar = document.getElementById('loading-progress');
-    percentage = 100 * (a / b);
-    progressBar.style.width = percentage + '%';
-    //progressBar.innerHTML = percentage + '%';
-}
 
 function send(api, packet, ok_func = null, fail_func = null) {
 
@@ -803,7 +726,7 @@ function removeCurrentModel() {
 
 function unloadCurrentModel() {
 
-    disablePage("busy");
+    pageOverlay.setMode("busy");
     fetch("/api/unload_model")
     .then(response => response.json())
     .then(json => {
@@ -811,15 +734,15 @@ function unloadCurrentModel() {
             loadedModelUUID = null;
             failedModelUUID = null;
         }
-        enablePage();
+        pageOverlay.setMode();
         enterModelPage();
     });
 }
 
 function loadCurrentModel() {
 
-    setLoadingProgress(0, 1);
-    disablePage("loading");
+    loadingOverlay.setProgress(0, 1);
+    pageOverlay.setMode("loading");
 
     let packet = {};
     packet.model_uuid = currentModelUUID;
@@ -853,7 +776,7 @@ function loadCurrentModel() {
         reader.read().then(function process({done, value}) {
             // console.log("Received chunk:", decoder.decode(value));
             if (done) {
-                enablePage();
+                pageOverlay.setMode();
                 enterModelPage();
                 return;
             }
@@ -871,7 +794,7 @@ function loadCurrentModel() {
                     loadedModelUUID = packet.model_uuid;
                     failedModelUUID = null;
                 } else if (json.result == "progress") {
-                    setLoadingProgress(json.module, json.num_modules);
+                    loadingOverlay.setProgress(json.module, json.num_modules);
                     //console.log(json);
                 } else {
                     loadedModelUUID = null;
@@ -889,7 +812,7 @@ function loadCurrentModel() {
         failedModelUUID = packet.model_uuid;
         failedModelError = "" + error;
         console.error('Error:', error);
-        enablePage();
+        pageOverlay.setMode();
         enterModelPage();
     });
 }
