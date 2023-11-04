@@ -1,0 +1,130 @@
+
+.vflex_line {
+    padding-top: 5px;
+    height-min: 24px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right: 5px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-drag: none;
+    user-select: none;
+    padding-left: 5px;
+    height: 32px;
+}
+
+.checkbox.short {
+    width: 112px;
+}
+
+.textbutton {
+    background-color: var(--button-background);
+    border-radius: 10px;
+    border: 1px solid var(--button-border);
+    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 6px;
+    margin-right: 10px;
+}
+
+.textbutton.small {
+    border-radius: 10px;
+    padding-top: 6px;
+    padding-bottom: 2px;
+}
+
+.textbutton.enabled {
+    color: var(--button-textcolor);
+    background-color: var(--button-background);
+    border: 1px solid var(--button-border);
+    user-drag: none;
+    user-select: none;
+}
+
+.textbutton.enabled:hover {
+    filter: brightness(150%);
+    cursor: pointer;
+}
+
+.textbutton.disabled {
+    color: var(--button-disabled-textcolor);
+    background-color: var(--button-disabled-background);
+    border: 1px solid var(--button-disabled-border);
+    pointer-events: none;
+}
+
+.linkbutton {
+    width: 100%;
+    color: var(--textcolor-head);
+    padding-top: 5px;
+    padding-left: 8px;
+    padding-bottom: 5px;
+    user-drag: none;
+    user-select: none;
+}
+
+.linkbutton.enabled:hover {
+    filter: brightness(140%);
+    cursor: pointer;
+}
+
+.danger {
+    color: var(--textcolor-danger);
+}
+
+.linkbutton.disabled {
+    color: var(--textcolor-dim);
+}
+
+.editable-label:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.block {
+    padding-left: 10px;
+}
+
+.block-header {
+    color: var(--textcolor-head);
+    margin-bottom: 2px;
+}
+
+.block-header:hover {
+    filter: brightness(140%);
+    cursor: pointer;
+}
+
+.block-header .arrow {
+    padding-right: 5px;
+}
+
+.block-contents {
+    display: none;
+    padding-right: 5px;
+}
+
+.block-contents.shown {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+}
+
+.item-split {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    height: 31px;
+}
+
+
+

@@ -67,9 +67,9 @@ def new_session():
     global current_session, session_list
     current_session = Session()
     current_session.init_new()
+    print(f"Created session {current_session.session_uuid}")
     filename = current_session.save()
     session_list[current_session.session_uuid] = (current_session.name, filename)
-    print(f"Created session {current_session.session_uuid}")
     return current_session.to_json()
 
 
@@ -108,7 +108,7 @@ class Session:
     session_uuid: str = None
     history: [] = None
     settings: {} = None
-    mode: str
+    # mode: str
 
     def __init__(self, session_uuid = None):
         self.session_uuid = session_uuid
@@ -122,7 +122,7 @@ class Session:
         self.name = "Unnamed session"
         self.session_uuid = str(uuid.uuid4())
         self.history = []
-        self.mode = ""
+        # self.mode = ""
         self.settings = get_default_session_settings()
 
 
@@ -131,7 +131,7 @@ class Session:
         j["session_uuid"] = self.session_uuid
         j["name"] = self.name
         j["history"] = self.history
-        j["mode"] = self.mode
+        # j["mode"] = self.mode
         j["settings"] = self.settings
         return j
 
@@ -140,7 +140,7 @@ class Session:
         self.name = j["name"]
         self.session_uuid = j["session_uuid"]
         self.history = j["history"]
-        self.mode = j["mode"]
+        # self.mode = j["mode"]
         self.settings = j.get("settings", get_default_session_settings())
 
 
@@ -159,8 +159,8 @@ class Session:
         return self.filename()
 
 
-    def update_settings(self, data):
-        self.settings = data
+    def update_settings(self, settings):
+        self.settings = settings
         self.save()
 
 

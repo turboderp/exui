@@ -86,12 +86,14 @@ def remove_model(data):
 def update_model(data):
     global models
 
-    if data["model_uuid"] is None:
+    print(data)
+
+    if data["model_uuid"] is None or data["model_uuid"] == "new":
         new_model = {}
         i = str(uuid.uuid4())
         new_model["model_uuid"] = i
-        new_model["name"] = data["name"] or "Unnamed model"
-        new_model["model_directory"] = data["model_directory"]
+        new_model["name"] = data.get("name", "Unnamed model")
+        new_model["model_directory"] = data.get("model_directory", "")
         models[i] = new_model
         prepare_model(new_model)
         save_models()
@@ -100,27 +102,14 @@ def update_model(data):
     i = data["model_uuid"]
     model = models[i]
 
-    if "name" in data: model["name"] = data["name"]
-    if "model_directory" in data: model["model_directory"] = data["model_directory"]
+    prev_model = model.copy()
+    for k, v in data.items(): model[k] = v
 
-    prepare_model(model)
-
-    if "seq_len" in data: model["seq_len"] = data["seq_len"]
-    if "rope_scale" in data: model["rope_scale"] = data["rope_scale"]
-    if "rope_alpha" in data: model["rope_alpha"] = data["rope_alpha"]
-
-    if "cache_mode" in data: model["cache_mode"] = data["cache_mode"]
-    if "chunk_size" in data: model["chunk_size"] = data["chunk_size"]
-    if "gpu_split" in data: model["gpu_split"] = data["gpu_split"]
-    if "gpu_split_auto" in data: model["gpu_split_auto"] = data["gpu_split_auto"]
-
-    if "draft_enabled" in data: model["draft_enabled"] = data["draft_enabled"]
-    if "draft_model_directory" in data: model["draft_model_directory"] = data["draft_model_directory"]
-
-    prepare_draft_model(model)
-
-    if "draft_rope_alpha" in data: model["draft_rope_alpha"] = data["draft_rope_alpha"]
-    if "draft_rope_alpha_auto" in data: model["draft_rope_alpha_auto"] = data["draft_rope_alpha_auto"]
+    if model["model_directory"] != prev_model["model_directory"]:
+        prepare_model(model)
+    if model.get("draft_model_directory", "") != prev_model.get("draft_model_directory", "") \
+        or model.get("draft_enabled", "") != prev_model.get("draft_enabled", ""):
+        prepare_draft_model(model)
 
     save_models()
     return None
@@ -132,7 +121,7 @@ def prepare_draft_model(model):
     if model["draft_enabled"]:
 
         prep_draft_config = ExLlamaV2Config()
-        prep_draft_config.model_dir = expanduser(model["draft_model_directory"])
+        prep_draft_config.model_dir = expanduser(model.get("draft_model_directory", ""))
         try:
             prep_draft_config.prepare()
             model["draft_config_status"] = "ok"
@@ -150,6 +139,7 @@ def prepare_draft_model(model):
         draft_stats["num_hidden_layers"] = prep_draft_config.num_hidden_layers
         draft_stats["vocab_size"] = prep_draft_config.vocab_size
         draft_stats["head_dim"] = prep_draft_config.head_dim
+        draft_stats["default_seq_len"] = prep_draft_config.max_seq_len
         model["draft_stats"] = draft_stats
 
         if "draft_rope_alpha" not in model: model["draft_rope_alpha"] = 1.0
@@ -178,6 +168,7 @@ def prepare_model(model):
     stats["num_hidden_layers"] = prep_config.num_hidden_layers
     stats["vocab_size"] = prep_config.vocab_size
     stats["head_dim"] = prep_config.head_dim
+    stats["default_seq_len"] = prep_config.max_seq_len
     model["stats"] = stats
 
     model["default_seq_len"] = prep_config.max_seq_len

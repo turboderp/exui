@@ -1,0 +1,56 @@
+
+.mainmenu {
+    background-color: var(--background-color-menu);
+    display: flex;
+    flex-direction: column;
+    width: 80px;
+    padding: 0px;
+    overflow-y: auto;
+    height: calc(100vh);
+}
+
+.mainmenu-page {
+    display: flex;
+    flex-grow: 1;
+}
+
+.mainmenu-button {
+    width: 80px;
+    min-width: 80px;
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    display: flex;
+    flex-direction: column;
+    padding-bot: 10px;
+    height: 100px;
+}
+
+.mainmenu-button p {
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+    font-size: var(--font-size-small);
+    font-weight: bold;
+    color: var(--textcolor-menu);
+    text-shadow: 0px 0px 0px #000000, 0px 5px 10px #0d0d0d;
+}
+
+.mainmenu-button img {
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+    text-shadow: 0px 0px 0px #000000, 0px 5px 10px #0d0d0d;
+}
+
+.mainmenu-button.active {
+    background-color: var(--background-color-body);
+}
+
+.mainmenu-button.inactive:hover {
+    filter: brightness(150%);
+    cursor: pointer;
+}

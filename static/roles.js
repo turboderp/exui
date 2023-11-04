@@ -1,5 +1,5 @@
 
-var roleAvatars = [
+export const roleAvatars = [
     "/static/gfx/avatar_frog.png",
     "/static/gfx/avatar_cat.png",
     "/static/gfx/avatar_dog.png",
@@ -10,7 +10,7 @@ var roleAvatars = [
     "/static/gfx/avatar_notcat.png"
 ];
 
-var roleColors = [
+export const roleColors = [
     "rgba(167, 231, 0, 255)",
     "rgba(136, 70, 104, 255)",
     "rgba(58, 90, 208, 255)",
@@ -21,15 +21,16 @@ var roleColors = [
     "rgba(120, 120, 120, 255)"
 ];
 
-var fallbackAvatar = "/static/gfx/avatar_notcat.png";
-var fallbackColor = "rgba(120, 120, 120, 255)";
+export const fallbackAvatar = "/static/gfx/avatar_notcat.png";
+export const fallbackColor = "rgba(120, 120, 120, 255)";
 
-var instructAvatars = [
+export const instructAvatars = [
     "/static/gfx/avatar_frog.png",
     "/static/gfx/avatar_cat.png",
 ];
 
-var instructColors = [
+export const instructColors = [
     "rgba(167, 231, 0, 255)",
     "rgba(136, 70, 104, 255)",
 ];
+

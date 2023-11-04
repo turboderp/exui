@@ -1,16 +1,31 @@
 
-// Model state
+export const g = {
 
-var currentModelUUID = null;
-var loadedModelUUID = null;
-var failedModelUUID = null;
-var failedModelError = null;
+    // Model state
 
-// Session state
+    loadedModelUUID: null,
+    failedModelUUID: null,
+    failedModelError: null,
 
-var currentSessionUUID = null;
-var currentSettings = null;
+    // Session state
 
-// Streaming state
+    currentSessionUUID: null,
+    currentSettings: null,
 
-var currentStreamingBlock = null;
+    // Streaming state
+
+    currentStreamingBlock: null,
+
+    // ..
+
+    promptFormats: null,
+
+}
+
+//  Global state from packet
+
+export function receiveGlobals(response) {
+    if (response.current_model) g.loadedModelUUID = response.current_model;
+    if (response.current_session) g.currentSessionUUID = response.current_model;
+    if (response.prompt_formats) g.promptFormats = response.prompt_formats;
+}
