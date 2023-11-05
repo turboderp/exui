@@ -22,88 +22,91 @@ api_lock_cancel = Lock()
 parser = argparse.ArgumentParser(description="ExUI, chatbot UI for ExLlamaV2")
 parser.add_argument("-host", "--host", type = str, help = "IP:PORT eg, 0.0.0.0:5000", default = "localhost:5000")
 parser.add_argument("-d", "--dir", type = str, help = "Location for user data and sessions, default: ~/exui", default = "~/exui")
+parser.add_argument("-v", "--verbose", action = "store_true", help = "Verbose (debug) mode")
 args = parser.parse_args()
+
+verbose = args.verbose
 
 @app.route("/")
 def home():
-    # global api_lock
-    print("/")
+    # global api_lock, verbose
+    if verbose: print("/")
     # with api_lock:
     return render_template("index.html")
 
 @app.route("/api/list_models")
 def api_list_models():
-    global api_lock
-    print("/api/list_models")
+    global api_lock, verbose
+    if verbose: print("/api/list_models")
     with api_lock:
         m, c = list_models()
         result = { "result": "ok",
                    "models": m,
                    "current_model": c }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/get_model_info", methods=['POST'])
 def api_get_model_info():
-    global api_lock
-    print("/api/get_model_info")
+    global api_lock, verbose
+    if verbose: print("/api/get_model_info")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         info = get_model_info(data)
         if info: result = { "result": "ok",
                             "model_info": info }
         else: result = { "result": "fail" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/update_model", methods=['POST'])
 def api_update_model():
-    global api_lock
-    print("/api/update_model")
+    global api_lock, verbose
+    if verbose: print("/api/update_model")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         i = update_model(data["model_info"])
         result = { "result": "ok", "new_model_uuid": i }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/load_model", methods=['POST'])
 def api_load_model():
-    global api_lock
-    print("/api/load_model")
+    global api_lock, verbose
+    if verbose: print("/api/load_model")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
-        print("-> ...")
+        if verbose: print("<-", data)
+        if verbose: print("-> ...")
         result = Response(stream_with_context(load_model(data)), mimetype = 'application/json')
-        print("->", result)
+        if verbose: print("->", result)
         return result
 
 @app.route("/api/unload_model")
 def api_unload_model():
-    global api_lock
-    print("/api/unload_model")
+    global api_lock, verbose
+    if verbose: print("/api/unload_model")
     with api_lock:
         result = unload_model()
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/list_sessions")
 def api_list_sessions():
-    global api_lock
-    print("/api/list_sessions")
+    global api_lock, verbose
+    if verbose: print("/api/list_sessions")
     with api_lock:
         s, c = list_sessions()
         result = { "result": "ok", "sessions": s, "current_session": c }
-        print("-> (...)")
+        if verbose: print("-> (...)")
         return json.dumps(result) + "\n"
 
 @app.route("/api/get_default_settings")
 def api_get_default_settings():
-    global api_lock
-    print("/api/get_default_settings")
+    global api_lock, verbose
+    if verbose: print("/api/get_default_settings")
     with api_lock:
         result = { "result": "ok",
                    "settings": get_default_session_settings(),
@@ -112,179 +115,179 @@ def api_get_default_settings():
 
 @app.route("/api/set_session", methods=['POST'])
 def api_set_session():
-    global api_lock
-    print("/api/set_session")
+    global api_lock, verbose
+    if verbose: print("/api/set_session")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         session = set_session(data)
         if session is not None:
             result = { "result": "ok",
                        "session": session,
                        "prompt_formats": list_prompt_formats() }
-            print("-> (...)")
+            if verbose: print("-> (...)")
         else:
             result = { "result": "fail" }
-            print("->", result)
+            if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/new_session", methods=['POST'])
 def api_new_session():
-    global api_lock
-    print("/api/new_session")
+    global api_lock, verbose
+    if verbose: print("/api/new_session")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         session = new_session()
         if "settings" in data: get_session().update_settings(data["settings"])
         if "user_input_text" in data: get_session().user_input(data)
         if "new_name" in data: get_session().rename(data)
         result = { "result": "ok", "session": session }
-        print("-> (...)")
+        if verbose: print("-> (...)")
         return json.dumps(result) + "\n"
 
 @app.route("/api/rename_session", methods=['POST'])
 def api_rename_session():
-    global api_lock
-    print("/api/rename_session")
+    global api_lock, verbose
+    if verbose: print("/api/rename_session")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         s = get_session()
         s.rename(data)
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/update_settings", methods=['POST'])
 def api_update_settings():
-    global api_lock
-    print("/api/update_settings")
+    global api_lock, verbose
+    if verbose: print("/api/update_settings")
     with api_lock:
         s = get_session()
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         s.update_settings(data["settings"])
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/user_input", methods=['POST'])
 def api_user_input():
-    global api_lock
-    print("/api/user_input")
+    global api_lock, verbose
+    if verbose: print("/api/user_input")
     with api_lock:
         s = get_session()
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         new_block = s.user_input(data)
         result = { "result": "ok", "new_block": new_block }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/list_prompt_formats")
 def api_list_prompt_formats():
-    global api_lock
-    print("/api/list_prompt_formats")
+    global api_lock, verbose
+    if verbose: print("/api/list_prompt_formats")
     with api_lock:
         result = {"result": "ok", "prompt_formats": list_prompt_formats()}
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/delete_block", methods=['POST'])
 def api_delete_block():
-    global api_lock
-    print("/api/delete_block")
+    global api_lock, verbose
+    if verbose: print("/api/delete_block")
     with api_lock:
         s = get_session()
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         s.delete_block(data["block_uuid"])
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/edit_block", methods=['POST'])
 def api_edit_block():
-    global api_lock
-    print("/api/edit_block")
+    global api_lock, verbose
+    if verbose: print("/api/edit_block")
     with api_lock:
         s = get_session()
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         s.edit_block(data["block"])
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/generate", methods=['POST'])
 def api_generate():
-    global api_lock
-    print("/api/generate")
+    global api_lock, verbose
+    if verbose: print("/api/generate")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         s = get_session()
-        print("-> ...");
+        if verbose: print("-> ...");
         result = Response(stream_with_context(s.generate(data)), mimetype = 'application/json')
-        print("->", result)
+        if verbose: print("->", result)
         return result
 
 @app.route("/api/cancel_generate")
 def api_cancel_generate():
-    global api_lock_cancel
-    print("/api/cancel_generate")
+    global api_lock_cancel, verbose
+    if verbose: print("/api/cancel_generate")
     with api_lock:
         set_cancel_signal()
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return result
 
 @app.route("/api/delete_session", methods=['POST'])
 def api_delete_session():
-    global api_lock
-    print("/api/delete_session")
+    global api_lock, verbose
+    if verbose: print("/api/delete_session")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         delete_session(data["session_uuid"]);
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/remove_model", methods=['POST'])
 def api_remove_model():
-    global api_lock
-    print("/api/remove_model")
+    global api_lock, verbose
+    if verbose: print("/api/remove_model")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         remove_model(data)
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/get_settings")
 def api_get_settings():
-    global api_lock
-    print("/api/get_settings")
+    global api_lock, verbose
+    if verbose: print("/api/get_settings")
     with api_lock:
         settings = get_settings()
         result = { "result": "ok",
                    "settings": settings }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 @app.route("/api/set_settings", methods=['POST'])
 def api_set_settings():
-    global api_lock
-    print("/api/set_settings")
+    global api_lock, verbose
+    if verbose: print("/api/set_settings")
     with api_lock:
         data = request.get_json()
-        print("<-", data)
+        if verbose: print("<-", data)
         set_settings(data["settings"])
         result = { "result": "ok" }
-        print("->", result)
+        if verbose: print("->", result)
         return json.dumps(result) + "\n"
 
 # Prepare torch
