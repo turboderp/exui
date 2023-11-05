@@ -33,7 +33,9 @@ Then run the web server with the included server.py:
 python server.py
 ```
 
-Your browser should automatically open on `localhost:5000` 
+Your browser should automatically open on the default IP/port. Config and sessions are stored in `~/exui` by default.
+
+Prebuilt wheels for ExLlamaV2 are available [here](https://github.com/turboderp/exllamav2/releases).
 
 ### More to come
 
