@@ -370,6 +370,7 @@ class SessionView {
                 if (done) {
                     //console.log("DONE");
                     self.enableInput();
+                    self.focusInputField();
                     return;
                 }
                 data += decoder.decode(value, {stream: true});
@@ -385,6 +386,7 @@ class SessionView {
                     if (json.result == "fail") {
                         console.error('Error:', json.error);
                         self.enableInput();
+                        self.focusInputField();
                         return;
                     } else {
                         self.receivedStreamResponse(json);
@@ -396,7 +398,8 @@ class SessionView {
         })
         .catch(error => {
             console.error('Error:', error);
-            this.enableInput();
+            self.enableInput();
+            self.focusInputField();
         })
     }
 
