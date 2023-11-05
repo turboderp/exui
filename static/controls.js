@@ -248,10 +248,12 @@ export class LabelCheckbox {
 }
 
 export class Button {
-    constructor(text, clickFunc) {
+    constructor(text, clickFunc, extra_style = null) {
         this.element = util.newDiv(null, "textbutton", text);
+        if (extra_style) this.element.classList.add(extra_style);
         this.enabled = true;
         this.clickFunc = clickFunc;
+        this.hidden = false;
 
         this.element.addEventListener("click", () => {
             if (!this.enabled) return;
@@ -264,6 +266,11 @@ export class Button {
         this.refresh();
     }
 
+    setHidden(hidden) {
+        this.hidden = hidden;
+        this.refresh();
+    }
+
     refresh() {
         if (this.enabled) {
             this.element.classList.add("enabled");
@@ -271,6 +278,11 @@ export class Button {
         } else {
             this.element.classList.remove("enabled");
             this.element.classList.add("disabled");
+        }
+        if (this.hidden) {
+            this.element.classList.add("hidden");
+        } else {
+            this.element.classList.remove("hidden");
         }
     }
 }

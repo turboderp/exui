@@ -153,14 +153,17 @@ class SessionView {
         let surround = util.newDiv(null, "session-input-surround");
         this.chatView.appendChild(surround);
 
-        this.sessionInput = this.createInputField();
-        surround.appendChild(this.sessionInput);
+        let sdiv = this.createInputField();
+        surround.appendChild(sdiv);
+        this.sessionInput = sdiv.children[0];
 
         this.items = new Map();
 
     }
 
     createInputField() {
+        let sdiv = util.newVFlex();
+
         let div = document.createElement("textarea");
         div.className = "session-input";
         div.placeholder = "Type here...";
@@ -172,7 +175,17 @@ class SessionView {
             }
         });
         div.addEventListener('input', () => { this.inputFieldAutogrow(); });
-        return div;
+
+        this.inputButton = new controls.Button("⏵ Chat", () => { this.submitInput() }, "session-input-button");
+        this.cancelButton = new controls.Button("⏹ Stop", () => { this.cancelGen() }, "session-input-button");
+        this.inputButton.setHidden(false);
+        this.cancelButton.setHidden(true);
+        this.inputButton.refresh();
+        this.cancelButton.refresh();
+        sdiv.appendChild(div);
+        sdiv.appendChild(this.inputButton.element);
+        sdiv.appendChild(this.cancelButton.element);
+        return sdiv;
     }
 
     focusInputField() {
@@ -281,6 +294,27 @@ class SessionView {
         }
     }
 
+    disableInput() {
+        //console.log("disable");
+        this.sessionInput.disabled = true;
+        this.inputButton.setHidden(true);
+        this.cancelButton.setHidden(false);
+    }
+
+    enableInput() {
+        //console.log("enable");
+        this.sessionInput.disabled = false;
+        this.inputButton.setHidden(false);
+        this.cancelButton.setHidden(true);
+    }
+
+    cancelGen() {
+        fetch("/api/cancel_generate")
+        .then(response => response.json())
+        .then(response => {
+        });
+    }
+
     isNearBottom() {
         const threshold = 20;
         const position = this.chatHistory.scrollTop + this.chatHistory.offsetHeight;
@@ -300,6 +334,8 @@ class SessionView {
     }
 
     getModelResponse() {
+
+        this.disableInput();
         let packet = {};
 
         let timeout = new Promise((resolve, reject) => {
@@ -333,6 +369,7 @@ class SessionView {
                 // console.log("Received chunk:", decoder.decode(value));
                 if (done) {
                     //console.log("DONE");
+                    self.enableInput();
                     return;
                 }
                 data += decoder.decode(value, {stream: true});
@@ -347,6 +384,7 @@ class SessionView {
                     }
                     if (json.result == "fail") {
                         console.error('Error:', json.error);
+                        self.enableInput();
                         return;
                     } else {
                         self.receivedStreamResponse(json);
@@ -358,7 +396,8 @@ class SessionView {
         })
         .catch(error => {
             console.error('Error:', error);
-        });
+            this.enableInput();
+        })
     }
 
     receivedStreamResponse(response) {
@@ -513,6 +552,13 @@ class ChatBlock {
                 let p = document.createElement('p');
                 p.classList.add("error");
                 p.innerHTML = "‼ Response exceeded " + this.block.meta.overflow + " tokens and was cut short.";
+                this.textBlock.appendChild(p);
+            }
+
+            if (this.block.meta.canceled) {
+                let p = document.createElement('p');
+                p.classList.add("error");
+                p.innerHTML = "‼ Canceled";
                 this.textBlock.appendChild(p);
             }
 

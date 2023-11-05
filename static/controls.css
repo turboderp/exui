@@ -34,6 +34,7 @@
     padding-top: 10px;
     padding-bottom: 6px;
     margin-right: 10px;
+    display: flex;
 }
 
 .textbutton.small {
@@ -126,5 +127,8 @@
     height: 31px;
 }
 
+.textbutton.hidden {
+    display: none;
+}
 
 

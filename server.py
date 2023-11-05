@@ -10,13 +10,14 @@ import torch
 
 from backend.models import update_model, load_models, get_model_info, list_models, remove_model, load_model, unload_model
 from backend.config import set_config_dir, global_state
-from backend.sessions import list_sessions, set_session, get_session, get_default_session_settings, new_session, delete_session
+from backend.sessions import list_sessions, set_session, get_session, get_default_session_settings, new_session, delete_session, set_cancel_signal
 from backend.prompts import list_prompt_formats
 from backend.settings import get_settings, set_settings
 
 app = Flask("ExUI")
 app.static_folder = 'static'
 api_lock = Lock()
+api_lock_cancel = Lock()
 
 parser = argparse.ArgumentParser(description="ExUI, chatbot UI for ExLlamaV2")
 parser.add_argument("-host", "--host", type = str, help = "IP:PORT eg, 0.0.0.0:5000", default = "localhost:5000")
@@ -226,6 +227,16 @@ def api_generate():
         s = get_session()
         print("-> ...");
         result = Response(stream_with_context(s.generate(data)), mimetype = 'application/json')
+        print("->", result)
+        return result
+
+@app.route("/api/cancel_generate")
+def api_cancel_generate():
+    global api_lock_cancel
+    print("/api/cancel_generate")
+    with api_lock:
+        set_cancel_signal()
+        result = { "result": "ok" }
         print("->", result)
         return result
 

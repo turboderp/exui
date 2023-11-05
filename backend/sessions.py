@@ -24,6 +24,14 @@ from backend.util import MultiTimer
 session_list: dict or None = None
 current_session = None
 
+# Cancel
+
+cancel_signal = False
+def set_cancel_signal():
+    global cancel_signal
+    cancel_signal = True
+
+
 # List models
 
 def list_sessions():
@@ -237,6 +245,7 @@ class Session:
 
 
     def generate(self, data):
+        global cancel_signal
 
         mt = MultiTimer()
 
@@ -352,8 +361,13 @@ class Session:
 
         # Stream response
 
+        cancel_signal = False
+
         mt.set_stage("gen")
         while True:
+
+            if cancel_signal:
+                break
 
             if chunk_tokens == 0:
 
@@ -405,6 +419,7 @@ class Session:
         meta["gen_tokens"] = generated_tokens
         meta["gen_speed"] = generated_tokens / (mt.stages["gen"] + 1e-8)
         meta["overflow"] = max_new_tokens if generated_tokens == max_new_tokens else 0
+        meta["canceled"] = cancel_signal
         new_block["meta"] = meta
 
         # Save response block

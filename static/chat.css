@@ -89,6 +89,16 @@
     width: calc(100vw - 685px);
 }
 
+.session-input-button {
+    margin-top: auto;
+    margin-bottom: 21px;
+    padding-right: 12px;
+    align-items: center;
+    display: flex;
+    width: 60px;
+    justify-content: center;
+}
+
 .session-input {
     font-size: var(--font-size-medium);
     padding: 18px;
@@ -101,6 +111,8 @@
     min-height: 55px;
     overflow-y: auto;
     margin: 15px;
+    flex-grow: 1;
+    width: auto;
     box-sizing: border-box;
 }
 
