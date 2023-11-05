@@ -35,7 +35,8 @@ python server.py
 
 Your browser should automatically open on the default IP/port. Config and sessions are stored in `~/exui` by default.
 
-Prebuilt wheels for ExLlamaV2 are available [here](https://github.com/turboderp/exllamav2/releases).
+Prebuilt wheels for ExLlamaV2 are available [here](https://github.com/turboderp/exllamav2/releases). Installing 
+the latest version of [Flash Attention](https://github.com/Dao-AILab/flash-attention) is recommended. 
 
 ### More to come
 
