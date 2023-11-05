@@ -43,6 +43,8 @@
     --slider-thumb-color: rgb(135, 150, 155);
     --slider-track-color: rgb(77, 77, 77);
     --slider-hover-color: rgb(88, 88, 88);
+
+    --show-stats: none;
 }
 
 body {
@@ -96,24 +98,4 @@ svg {
 
 svg.active {
     fill: var(--iconcolor-active);
-}
-
-.checkbox-sc {
-    align-items: center;
-    padding: 0px;
-    margin: 0px;
-    padding-top: 10px;
-    padding-bottom: 5px;
-}
-
-.checkbox-sc:hover {
-    filter: brightness(130%);
-}
-
-.checkbox-sc label {
-    color: var(--textcolor-head);
-    cursor: pointer;
-    user-drag: none;
-    user-select: none;
-    padding-left: 2px;
 }

@@ -1,12 +1,23 @@
 
+.mainmenu-main {
+    background-color: var(--background-color-menu);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh);
+    overflow-y: auto;
+}
+
+.mainmenu-spacer {
+    margin-top: auto;
+}
+
+
 .mainmenu {
     background-color: var(--background-color-menu);
     display: flex;
     flex-direction: column;
     width: 80px;
     padding: 0px;
-    overflow-y: auto;
-    height: calc(100vh);
 }
 
 .mainmenu-page {

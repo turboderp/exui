@@ -144,3 +144,44 @@ export function makeEditable(div, validateFunc, onValueChange, onExit, in_text =
     textarea.focus();
 }
 
+/*
+
+function saveFocus() {
+
+    let focus = {};
+    focus.focusedDiv = document.activeElement;
+    focus.focusedID = null;
+    focus.selectionStart = -1;
+    focus.selectionEnd = -1;
+
+    if (focus.focusedDiv) {
+        focus.focusedID = focus.focusedDiv.id;
+        if (focus.focusedDiv.tagName === 'INPUT' && focus.focusedDiv.type === 'text') {
+            focus.selectionStart = focus.focusedDiv.selectionStart;
+            focus.selectionEnd = focus.focusedDiv.selectionEnd;
+        }
+    }
+
+//    console.log(focus);
+    return focus;
+}
+
+function restoreFocus(focus) {
+
+//    console.log("restore:", focus);
+
+    if (focus.focusedID && focus.focusedID != "")
+    {
+        let focusedElement = document.getElementById(focus.focusedID);
+        if (focusedElement) {
+            focusedElement.focus();
+            if (focus.selectionStart != -1)
+            {
+                focusedElement.selectionStart = focus.selectionStart;
+                focusedElement.selectionEnd = focus.selectionEnd;
+            }
+        }
+    }
+}
+*/
+

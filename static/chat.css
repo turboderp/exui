@@ -201,6 +201,7 @@
     border-radius: 6px;
     padding: 6px;
     padding-left: 10px;
+    display: var(--show-stats);
 }
 
 .session-block-text p.name-assistant + .session-block-text p {

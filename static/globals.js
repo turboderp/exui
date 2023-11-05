@@ -19,6 +19,7 @@ export const g = {
     // ..
 
     promptFormats: null,
+    smoothScrolling: true,
 
 }
 

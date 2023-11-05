@@ -333,7 +333,7 @@ export class ModelView {
         this.stats2 = new controls.LabelText("model-view-item-left", "Dimension", "model-view-item-right", this.modelInfo_compiled, "stats2");
         this.stats3 = new controls.LabelText("model-view-item-left", "Heads", "model-view-item-right", this.modelInfo_compiled, "stats3");
         this.stats4 = new controls.LabelText("model-view-item-left", "Vocab size", "model-view-item-right", this.modelInfo_compiled, "stats4");
-        this.stats5 = new controls.LabelText("model-view-item-left", "Default seq. length", "model-view-item-right", this.modelInfo_compiled, "stats5");
+        this.stats5 = new controls.LabelText("model-view-item-left", "Default context length", "model-view-item-right", this.modelInfo_compiled, "stats5");
         this.element_model.appendChild(this.stats1.element);
         this.element_model.appendChild(this.stats2.element);
         this.element_model.appendChild(this.stats3.element);

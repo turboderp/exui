@@ -293,11 +293,8 @@ class SessionView {
         this.stickyScroll = true;
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-//                smoothscroll = document.getElementById("cb-smooth-scroll").checked;
-                let smoothscroll = true;
-                let behavior = smoothscroll ? 'smooth' : 'auto';
+                let behavior = globals.g.smoothScrolling ? 'smooth' : 'auto';
                 this.chatHistory.scroll({ top: this.chatHistory.scrollHeight, behavior: behavior });
-                //this.chatHistory.scroll({ top: this.chatHistory.scrollHeight, behavior: behavior });
             });
         });
     }

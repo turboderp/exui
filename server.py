@@ -12,6 +12,7 @@ from backend.models import update_model, load_models, get_model_info, list_model
 from backend.config import set_config_dir, global_state
 from backend.sessions import list_sessions, set_session, get_session, get_default_session_settings, new_session, delete_session
 from backend.prompts import list_prompt_formats
+from backend.settings import get_settings, set_settings
 
 app = Flask("ExUI")
 app.static_folder = 'static'
@@ -167,9 +168,6 @@ def api_update_settings():
         print("->", result)
         return json.dumps(result) + "\n"
 
-
-
-
 @app.route("/api/user_input", methods=['POST'])
 def api_user_input():
     global api_lock
@@ -183,10 +181,6 @@ def api_user_input():
         print("->", result)
         return json.dumps(result) + "\n"
 
-
-
-
-
 @app.route("/api/list_prompt_formats")
 def api_list_prompt_formats():
     global api_lock
@@ -195,10 +189,6 @@ def api_list_prompt_formats():
         result = {"result": "ok", "prompt_formats": list_prompt_formats()}
         print("->", result)
         return json.dumps(result) + "\n"
-
-
-
-
 
 @app.route("/api/delete_block", methods=['POST'])
 def api_delete_block():
@@ -226,7 +216,6 @@ def api_edit_block():
         print("->", result)
         return json.dumps(result) + "\n"
 
-
 @app.route("/api/generate", methods=['POST'])
 def api_generate():
     global api_lock
@@ -240,9 +229,6 @@ def api_generate():
         print("->", result)
         return result
 
-
-
-
 @app.route("/api/delete_session", methods=['POST'])
 def api_delete_session():
     global api_lock
@@ -254,7 +240,6 @@ def api_delete_session():
         result = { "result": "ok" }
         print("->", result)
         return json.dumps(result) + "\n"
-
 
 @app.route("/api/remove_model", methods=['POST'])
 def api_remove_model():
@@ -268,6 +253,28 @@ def api_remove_model():
         print("->", result)
         return json.dumps(result) + "\n"
 
+@app.route("/api/get_settings")
+def api_get_settings():
+    global api_lock
+    print("/api/get_settings")
+    with api_lock:
+        settings = get_settings()
+        result = { "result": "ok",
+                   "settings": settings }
+        print("->", result)
+        return json.dumps(result) + "\n"
+
+@app.route("/api/set_settings", methods=['POST'])
+def api_set_settings():
+    global api_lock
+    print("/api/set_settings")
+    with api_lock:
+        data = request.get_json()
+        print("<-", data)
+        set_settings(data["settings"])
+        result = { "result": "ok" }
+        print("->", result)
+        return json.dumps(result) + "\n"
 
 # Prepare torch
 
