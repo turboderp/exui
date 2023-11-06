@@ -11,7 +11,7 @@ export const roleAvatars = [
 ];
 
 export const roleColors = [
-    "rgba(167, 231, 0, 255)",
+    "rgba(167, 211, 10, 255)",
     "rgba(136, 70, 104, 255)",
     "rgba(58, 90, 208, 255)",
     "rgba(215, 86, 98, 255)",
@@ -30,7 +30,7 @@ export const instructAvatars = [
 ];
 
 export const instructColors = [
-    "rgba(167, 231, 0, 255)",
+    "rgba(107, 201, 0, 255)",
     "rgba(136, 70, 104, 255)",
 ];
 

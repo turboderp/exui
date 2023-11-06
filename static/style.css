@@ -1,51 +1,3 @@
-:root {
-    --font-family: Helvetica, sans-serif;
-    --font-size-large: 20px;
-    --font-size-chat: 16px;
-    --font-size-medium: 14px;
-    --font-size-small: 12px;
-
-    --textcolor-menu: rgba(217, 217, 217, 255);
-    --textcolor-text: rgba(217, 217, 217, 255);
-    --textcolor-error: rgba(255, 167, 167, 255);
-    --textcolor-danger: rgba(255, 127, 127, 255);
-    --textcolor-dim: rgba(97, 97, 97, 255);
-    --textcolor-dim2: rgba(120, 120, 120, 255);
-    --textcolor-head: rgba(150, 150, 150, 255);
-    --textcolor-link: rgba(110, 110, 200, 255);
-    --textcolor-stats: rgba(110, 160, 150, 255);
-
-    --iconcolor: rgba(217, 217, 217, 255);
-    --iconcolor-active: rgba(167, 231, 0, 255);
-
-    --background-color-menu: rgba(32, 32, 32, 255);
-    --background-color-body: rgba(42, 42, 42, 255);
-    --background-color-view: rgba(52, 52, 52, 255);
-
-    --background-color-code: rgba(32, 32, 32, 255);
-    --border-color-code: rgba(52, 52, 52, 255);
-    --textcolor-code: rgba(200, 217, 208, 255);
-
-    --button-textcolor: rgba(217, 217, 217, 255);
-    --button-background: rgba(64, 64, 128, 255);
-    --button-border: rgba(96, 96, 192, 255);
-    --button-disabled-textcolor: rgba(117, 117, 117, 255);
-    --button-disabled-background: rgba(64, 64, 64, 255);
-    --button-disabled-border: rgba(96, 96, 96, 255);
-
-    --textbox-background: rgba(42, 42, 42, 255);
-    --textbox-border: rgba(70, 70, 70, 255);
-
-    --spinner-color: rgba(230, 120, 20, 255);
-    --progress-color: rgba(137, 201, 80, 255);
-    --progress-color-back: rgba(40, 65, 20, 255);
-
-    --slider-thumb-color: rgb(135, 150, 155);
-    --slider-track-color: rgb(77, 77, 77);
-    --slider-hover-color: rgb(88, 88, 88);
-
-    --show-stats: none;
-}
 
 body {
     font-family: var(--font-family);
@@ -93,6 +45,7 @@ body {
 
 svg {
     fill: var(--iconcolor);
+    color: var(--iconcolor);
     text-shadow: 5px 5px 5px rgba(0, 0, 0, 1.0);
 }
 

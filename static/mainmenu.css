@@ -47,7 +47,7 @@
     font-size: var(--font-size-small);
     font-weight: bold;
     color: var(--textcolor-menu);
-    text-shadow: 0px 0px 0px #000000, 0px 5px 10px #0d0d0d;
+    text-shadow: 0px 0px 0px #000000, 0px 5px 10px #0d0d0d80;
 }
 
 .mainmenu-button img {
@@ -62,6 +62,6 @@
 }
 
 .mainmenu-button.inactive:hover {
-    filter: brightness(150%);
+    filter: brightness(var(--hover-brightness));
     cursor: pointer;
 }

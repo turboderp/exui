@@ -38,18 +38,18 @@
 .model-list-entry svg {
     text-shadow: 5px 5px 5px rgba(0, 0, 0, 1.0);
     padding: 8px;
-    filter: brightness(50%);
     margin-left: 5px;
 }
 
 .model-list-entry.active {
-    background-color: var(--background-color-view);
-    filter: brightness(120%);
+    color: var(--textcolor-text);
+    background-color: var(--background-color-active);
+    filter: brightness(var(--select-brightness));
 }
 
 .model-list-entry.inactive:hover {
     cursor: pointer;
-    filter: brightness(150%);
+    filter: brightness(var(--hover-brightness));
 }
 
 .model-view {
@@ -76,7 +76,7 @@
 }
 
 .model-view-text.divider {
-    border-bottom: 1px solid var(--textcolor-dim);
+    border-bottom: 1px solid var(--textcolor-dim2);
     width: 100%;
     color: var(--textcolor-text);
     padding-top: 5px;
@@ -133,6 +133,10 @@
     padding: 5px;
 }
 
+.model-view-item-textbox::placeholder {
+    color: var(--textcolor-dim);
+}
+
 .model-view-item-textbox.wide {
     flex-grow: 1;
 }
@@ -150,7 +154,7 @@
 
 .model-view-item-textbox:focus {
     outline: none;
-    filter: brightness(120%);
+    filter: brightness(var(--select-brightness));
 }
 
 .model-view-item-combobox {

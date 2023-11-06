@@ -6,6 +6,7 @@ def default_settings():
     j = {}
     j["smooth_scrolling"] = True
     j["show_stats"] = False
+    j["theme"] = "Dark"
     return j
 
 def get_settings():

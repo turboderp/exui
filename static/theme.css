@@ -1,0 +1,224 @@
+/* Default theme (dark) */
+
+:root {
+    --font-family: Helvetica, sans-serif;
+    --font-size-large: 20px;
+    --font-size-chat: 16px;
+    --font-size-medium: 14px;
+    --font-size-small: 12px;
+
+    --textcolor-menu: rgba(217, 217, 217, 255);
+    --textcolor-text: rgba(217, 217, 217, 255);
+    --textcolor-error: rgba(255, 167, 167, 255);
+    --textcolor-danger: rgba(255, 127, 127, 255);
+    --textcolor-dim: rgba(97, 97, 97, 255);
+    --textcolor-dim2: rgba(120, 120, 120, 255);
+    --textcolor-head: rgba(150, 150, 150, 255);
+    --textcolor-link: rgba(110, 110, 200, 255);
+    --textcolor-stats: rgba(110, 160, 150, 255);
+
+    --iconcolor: rgba(117, 117, 117, 255);
+    --iconcolor-active: rgba(167, 231, 0, 255);
+
+    --background-color-menu: rgba(32, 32, 32, 255);
+    --background-color-body: rgba(42, 42, 42, 255);
+    --background-color-view: rgba(52, 52, 52, 255);
+    --background-color-user: rgba(52, 52, 52, 255);
+    --background-color-chat: rgba(42, 42, 42, 255);
+    --background-color-chatsettings: rgba(42, 42, 42, 255);
+    --background-color-active: rgba(52, 52, 52, 255);
+    --background-color-control: rgba(52, 52, 52, 255);
+    --background-color-popup: rgba(52, 52, 52, 255);
+
+    --background-color-code: rgba(32, 32, 32, 255);
+    --border-color-code: rgba(52, 52, 52, 255);
+    --textcolor-code: rgba(200, 217, 208, 255);
+
+    --button-textcolor: rgba(217, 217, 217, 255);
+    --button-background: rgba(64, 64, 128, 255);
+    --button-border: rgba(96, 96, 192, 255);
+    --button-disabled-textcolor: rgba(117, 117, 117, 255);
+    --button-disabled-background: rgba(64, 64, 64, 255);
+    --button-disabled-border: rgba(96, 96, 96, 255);
+
+    --textbox-background: rgba(42, 42, 42, 255);
+    --textbox-border: rgba(70, 70, 70, 255);
+
+    --spinner-color: rgba(230, 120, 20, 255);
+    --progress-color: rgba(137, 201, 80, 255);
+    --progress-color-back: rgba(40, 65, 20, 255);
+
+    --slider-thumb-color: rgb(135, 150, 155);
+    --slider-track-color: rgb(77, 77, 77);
+    --slider-hover-color: rgb(88, 88, 88);
+
+    --select-brightness: 125%;
+    --hover-brightness: 150%;
+
+    --show-stats: none;
+}
+
+/* Dark */
+
+.theme-dark {
+}
+
+/* Darker */
+
+.theme-darker {
+    --background-color-menu: rgba(12, 12, 12, 255);
+    --background-color-body: rgba(16, 16, 16, 255);
+    --background-color-view: rgba(32, 32, 32, 255);
+    --background-color-user: rgba(32, 32, 32, 255);
+    --background-color-chat: rgba(16, 16, 16, 255);
+    --background-color-chatsettings: rgba(16, 16, 16, 255);
+    --background-color-active: rgba(32, 32, 32, 255);
+    --background-color-control: rgba(32, 32, 32, 255);
+    --background-color-popup: rgba(32, 32, 32, 255);
+
+    --textbox-background: rgba(16, 16, 16, 255);
+    --textbox-border: rgba(40, 40, 40, 255);
+
+    --iconcolor: rgba(77, 77, 77, 255);
+    --iconcolor-active: rgba(167, 231, 0, 255);
+}
+
+/* Dark blue */
+
+.theme-darkblue {
+    --background-color-menu: rgba(23, 26, 28, 255);
+    --background-color-body: rgba(33, 36, 40, 255);
+    --background-color-view: rgba(33, 36, 40, 255);
+    --background-color-user: rgba(43, 45, 49, 255);
+    --background-color-chat: rgba(33, 36, 40, 255);
+    --background-color-chatsettings: rgba(33, 36, 40, 255);
+    --background-color-active: rgba(43, 45, 49, 255);
+    --background-color-control: rgba(43, 45, 49, 255);
+    --background-color-popup: rgba(43, 45, 49, 255);
+
+    --textcolor-dim2: rgba(70, 75, 90, 255);
+
+    --textbox-background: rgba(43, 45, 49, 255);
+    --textbox-border: rgba(48, 52, 57, 255);
+
+    --iconcolor: rgba(77, 77, 77, 255);
+    --iconcolor-active: rgba(127, 171, 60, 255);
+
+    --font-family: Arial, sans-serif;
+
+    --button-textcolor: rgba(217, 217, 217, 255);
+    --button-background: rgba(84, 90, 118, 255);
+    --button-border: rgba(90, 94, 126, 255);
+    --button-disabled-textcolor: rgba(96, 100, 108, 255);
+    --button-disabled-background: rgba(64, 65, 72, 255);
+    --button-disabled-border: rgba(70, 73, 86, 255);
+
+    --background-color-code: rgba(23, 26, 28, 255);
+    --border-color-code: rgba(44, 47, 52, 255);
+    --textcolor-code: rgba(200, 217, 208, 255);
+}
+
+/* Light */
+
+.theme-light {
+    --background-color-menu: rgba(255, 255, 255, 255);
+    --background-color-body: rgba(227, 227, 227, 255);
+    --background-color-view: rgba(255, 255, 255, 255);
+    --background-color-user: rgba(227, 227, 227, 255);
+    --background-color-chat: rgba(255, 255, 255, 255);
+    --background-color-chatsettings: rgba(255, 255, 255, 255);
+    --background-color-active: rgba(142, 175, 222, 255);
+    --background-color-control: rgba(205, 205, 205, 255);
+    --background-color-popup: rgba(255, 255, 255, 255);
+
+    --textbox-background: rgba(205, 205, 205, 255);
+    --textbox-border: rgba(222, 222, 200, 255);
+
+    --textcolor-menu: rgba(117, 117, 117, 255);
+    --textcolor-text: rgba(17, 17, 17, 255);
+    --textcolor-error: rgba(225, 117, 117, 255);
+    --textcolor-danger: rgba(255, 67, 67, 255);
+    --textcolor-dim: rgba(117, 117, 117, 255);
+    --textcolor-dim2: rgba(180, 180, 180, 255);
+    --textcolor-head: rgba(90, 90, 90, 255);
+    --textcolor-link: rgba(110, 110, 200, 255);
+    --textcolor-stats: rgba(110, 160, 150, 255);
+
+    --iconcolor: rgba(117, 117, 117, 255);
+    --iconcolor-active: rgba(187, 255, 40, 255);
+
+    --background-color-code: rgba(64, 64, 64, 255);
+    --border-color-code: rgba(255, 255, 255, 255);
+    --textcolor-code: rgba(200, 217, 208, 255);
+
+    --slider-thumb-color: rgb(195, 160, 125);
+    --slider-track-color: rgb(177, 177, 177);
+    --slider-hover-color: rgb(88, 88, 88);
+
+    --select-brightness: 100%;
+    --hover-brightness: 90%;
+
+    --iconcolor: rgba(117, 117, 117, 255);
+    --iconcolor-active: rgba(117, 117, 117, 255);
+
+    --button-textcolor: rgba(47, 57, 80, 255);
+    --button-background: rgba(142, 175, 222, 255);
+    --button-border: rgba(142, 175, 222, 255);
+    --button-disabled-textcolor: rgba(117, 117, 117, 255);
+    --button-disabled-background: rgba(180, 180, 180, 255);
+    --button-disabled-border: rgba(150, 150, 150, 255);
+
+    --progress-color: rgba(142, 175, 222, 255);
+    --progress-color-back: rgba(47, 57, 80, 255);
+}
+
+/* Unholy */
+
+.theme-bold {
+
+    --background-color-menu: rgba(38, 38, 38, 255);
+    --background-color-body: rgba(12, 151, 236, 255);
+    --background-color-view: rgba(255, 255, 255, 255);
+    --background-color-user: rgba(227, 227, 227, 255);
+    --background-color-chat: rgba(255, 255, 255, 255);
+    --background-color-chatsettings: rgba(255, 255, 255, 255);
+    --background-color-active: rgba(124, 205, 223, 255);
+    --background-color-control: rgba(197, 218, 236, 255);
+    --background-color-popup: rgba(255, 255, 255, 255);
+
+    --textbox-background: rgba(197, 218, 236, 255);
+    --textbox-border: rgba(197, 218, 236, 255);
+
+    --textcolor-menu: rgba(255, 255, 255, 255);
+    --textcolor-text: rgba(17, 17, 17, 255);
+    --textcolor-error: rgba(225, 117, 117, 255);
+    --textcolor-danger: rgba(255, 67, 67, 255);
+    --textcolor-dim: rgba(8, 121, 156, 255);
+    --textcolor-dim2: rgba(117, 128, 173, 255);
+    --textcolor-head: rgba(70, 80, 90, 255);
+    --textcolor-link: rgba(110, 110, 200, 255);
+    --textcolor-stats: rgba(110, 160, 150, 255);
+
+    --font-family: Arial, sans-serif;
+
+    --iconcolor: rgba(47, 77, 117, 255);
+    --iconcolor-active: rgba(252, 152, 72, 255);
+
+    --select-brightness: 100%;
+    --hover-brightness: 100%;
+
+    --button-textcolor: rgba(47, 37, 20, 255);
+    --button-background: rgba(242, 162, 92, 255);
+    --button-border: rgba(242, 162, 92, 255);
+    --button-disabled-textcolor: rgba(137, 137, 137, 255);
+    --button-disabled-background: rgba(196, 196, 196, 255);
+    --button-disabled-border: rgba(189, 189, 189, 255);
+
+    --progress-color: rgba(252, 152, 72, 255);
+    --progress-color-back: rgba(122, 79, 42, 255);
+
+    --slider-thumb-color: rgba(102, 122, 132, 255);
+    --slider-track-color: rgb(197, 197, 197);
+    --slider-hover-color: rgb(88, 88, 88);
+
+}

@@ -15,9 +15,10 @@
 
 .overlay {
     background-color: var(--background-color-view);
+    color: var(--textcolor-head);
     padding: 20px;
     padding-bottom: 40px;
-    box-shadow: 0 14px 18px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -32,7 +33,7 @@
     width: 320px;
     background-color: var(--progress-color-back);
     border: 1px solid var(--progress-color);
-    padding: 2px;
+    padding: 0px;
     border-radius: 0px;
 }
 

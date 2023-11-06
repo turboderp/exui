@@ -4,8 +4,8 @@
     bottom: 10px;
     left: 90px;
     width: 228px;
-    height: 65px;
-    background: var(--background-color-view);
+    height: 95px;
+    background: var(--background-color-popup);
     border-radius: 10px;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
     color: white;
@@ -18,14 +18,14 @@
     content: '';
     position: absolute;
     right: 100%;
-    top: 30%;
+    top: 40%;
     border-width: 15px 22px 15px 0;
     border-style: solid;
     border-color: transparent var(--background-color-view); transparent transparent;
 }
 
 .checkbox-sc {
-    color: var(--textcolor-menu);
+    color: var(--textcolor-head);
     align-items: center;
     padding: 0px;
     margin: 0px;
@@ -35,6 +35,6 @@
 }
 
 .checkbox-sc:hover {
-    filter: brightness(140%);
+    filter: brightness(var(--hover-brightness));
     cursor: pointer;
 }
