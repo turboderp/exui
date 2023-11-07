@@ -289,7 +289,7 @@ export class ModelView {
         let heads_q = input_stats.num_attention_heads;
         let heads_kv = input_stats.num_key_value_heads;
         let head_dim = input_stats.head_dim;
-        s.stats1 = "" + heads_q;
+        s.stats1 = "" + input_stats.num_hidden_layers;
         s.stats2 = "" + input_stats.hidden_size + " (" + input_stats.intermediate_size + ")";
         if (heads_q == heads_kv) {
             s.stats3 = heads_q + ", dim: " + head_dim;
