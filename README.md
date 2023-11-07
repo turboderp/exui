@@ -2,7 +2,7 @@
 
 # ExUI
 
-This is a simple, lightweight web interface for [ExLlamaV2](https://github.com/turboderp/exllamav2).
+This is a simple, lightweight browser-based UI for running local inference using [ExLlamaV2](https://github.com/turboderp/exllamav2).
 
 ### Overview of features
 
@@ -14,8 +14,11 @@ This is a simple, lightweight web interface for [ExLlamaV2](https://github.com/t
 
 ### Screenshots
 
-[![chat_screenshot](doc/screenshot1_thumb.png)](doc/screenshot1.png)
-[![chat_screenshot](doc/screenshot2_thumb.png)](doc/screenshot2.png)
+[![chat_screenshot](doc/screenshot_1_thumb.png)](doc/screenshot_1.png)
+[![chat_screenshot](doc/screenshot_2_thumb.png)](doc/screenshot_2.png)
+[![chat_screenshot](doc/screenshot_3_thumb.png)](doc/screenshot_3.png)
+[![chat_screenshot](doc/screenshot_4_thumb.png)](doc/screenshot_4.png)
+[![chat_screenshot](doc/screenshot_5_thumb.png)](doc/screenshot_5.png)
 
 ### Running locally
 
