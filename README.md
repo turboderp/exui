@@ -19,6 +19,7 @@ This is a simple, lightweight browser-based UI for running local inference using
 [![chat_screenshot](doc/screenshot_3_thumb.png)](doc/screenshot_3.png)
 [![chat_screenshot](doc/screenshot_4_thumb.png)](doc/screenshot_4.png)
 [![chat_screenshot](doc/screenshot_5_thumb.png)](doc/screenshot_5.png)
+[![chat_screenshot](doc/screenshot_6_thumb.png)](doc/screenshot_6.png)
 
 ### Running locally
 
