@@ -1,9 +1,6 @@
 
 class PromptFormat:
 
-    botname = "Chatbort"
-    username = "User"
-
     def __init__(self):
         pass
 
@@ -40,33 +37,6 @@ class PromptFormat_raw(PromptFormat):
     def encode_special_tokens(self):
         return False
 
-    # def default_system_prompt(self):
-    #     return \
-    #         f"""This is a conversation between a helpful AI assistant named {self.botname} and a """ + \
-    #         (f"""user named {self.username}.""" if self.username != "User" else """user.""")
-    #
-    # def first_prompt(self):
-    #     return \
-    #         f"""<|system_prompt|>\n{self.username}: <|user_prompt|>\n{self.botname}:"""
-    #
-    # def subs_prompt(self):
-    #     return \
-    #         f"""{self.username}: <|user_prompt|>\n{self.botname}:"""
-    #
-    # def stop_conditions(self, tokenizer):
-    #     return \
-    #         [self.username + ":",
-    #          self.username[0:1] + ":",
-    #          self.username.upper() + ":",
-    #          self.username.lower() + ":",
-    #          tokenizer.eos_token_id]
-    #
-    # def encoding_options(self):
-    #     return False, False, False
-    #
-    # def print_bot_name(self):
-    #     return True
-
 
 class PromptFormat_llama(PromptFormat):
 
@@ -85,12 +55,40 @@ class PromptFormat_llama(PromptFormat):
 
     def format(self, prompt, response, system_prompt, settings):
         text = "<s>[INST] "
-        if system_prompt:
+        if system_prompt and system_prompt.strip() != "":
             text += "<<SYS>>\n"
             text += system_prompt
             text += "\n<</SYS>>\n\n "
         text += prompt
         text += " [/INST]"
+        if response:
+            text += response
+            text += "</s>"
+        return text
+
+
+class PromptFormat_mistrallite(PromptFormat):
+
+    description = "MistralLite format"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = "<|prompter|>"
+        if system_prompt and system_prompt.strip() != "":
+            text += system_prompt
+            text += "</s><|assistant|>Understood.</s><|prompter|>"
+        text += prompt
+        text += "</s><|assistant|>"
         if response:
             text += response
             text += "</s>"
@@ -127,7 +125,7 @@ class PromptFormat_chatml(PromptFormat):
 
     def format(self, prompt, response, system_prompt, settings):
         text = ""
-        if system_prompt:
+        if system_prompt and system_prompt.strip() != "":
             text += "<|im_start|>system\n"
             text += system_prompt
             text += "\n<|im_end|>\n"
@@ -154,11 +152,10 @@ prompt_formats = \
     "Chat-RP": PromptFormat_raw,
     "Llama-chat": PromptFormat_llama,
     "ChatML": PromptFormat_chatml,
-    "TinyLlama-chat": PromptFormat_tinyllama
+    "TinyLlama-chat": PromptFormat_tinyllama,
+    "MistralLite": PromptFormat_mistrallite
 }
 
 def list_prompt_formats():
     global prompt_formats
     return list(prompt_formats.keys())
-
-
