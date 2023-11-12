@@ -427,6 +427,8 @@
 .sss-item-right.clickable {
     color: var(--textcolor-head);
     padding-left: 5px;
+    user-drag: none;
+    user-select: none;
 }
 
 .sss-item-right.clickable:hover {

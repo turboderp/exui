@@ -24,6 +24,10 @@
     border-color: transparent var(--background-color-view); transparent transparent;
 }
 
+.settings-float .vflex_line {
+    margin-top: 5px;
+}
+
 .checkbox-sc {
     color: var(--textcolor-head);
     align-items: center;
@@ -32,6 +36,8 @@
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 5px;
+    user-drag: none;
+    user-select: none;
 }
 
 .checkbox-sc:hover {

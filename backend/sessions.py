@@ -104,6 +104,11 @@ def get_default_session_settings():
         "temperature": 0.8,
         "top_k": 50,
         "top_p": 0.8,
+        "min_p": 0.0,
+        "tfs": 0.0,
+        "mirostat": False,
+        "mirostat_tau": 1.25,
+        "mirostat_eta": 0.1,
         "typical": 0.0,
         "repp": 1.15,
         "repr": 1024,
@@ -149,7 +154,9 @@ class Session:
         self.session_uuid = j["session_uuid"]
         self.history = j["history"]
         # self.mode = j["mode"]
-        self.settings = j.get("settings", get_default_session_settings())
+        settings = get_default_session_settings()
+        if "settings" in j: settings.update(j["settings"])
+        self.settings = settings
 
 
     def load(self):
@@ -281,7 +288,12 @@ class Session:
         gen_settings.temperature = self.settings["temperature"]
         gen_settings.top_k = self.settings["top_k"]
         gen_settings.top_p = self.settings["top_p"]
+        gen_settings.min_p = self.settings["min_p"]
+        gen_settings.tfs = self.settings["tfs"]
         gen_settings.typical = self.settings["typical"]
+        gen_settings.mirostat = self.settings["mirostat"]
+        gen_settings.mirostat_tau = self.settings["mirostat_tau"]
+        gen_settings.mirostat_eta = self.settings["mirostat_eta"]
         gen_settings.token_repetition_penalty = self.settings["repp"]
         gen_settings.token_repetition_range = self.settings["repr"]
         gen_settings.token_repetition_decay = self.settings["repr"]

@@ -245,6 +245,13 @@ export class LabelCheckbox {
     refresh() {
         this.chkb.checked = this.data[this.data_id];
     }
+
+    setVisible(visible) {
+        if (visible)
+            this.element.classList.remove("hidden");
+        else
+            this.element.classList.add("hidden");
+    }
 }
 
 export class Button {
@@ -500,6 +507,13 @@ export class SettingsSlider {
         v *= this.exp;
         this.slider.value = "" + v;
         this.sliderInput();
+    }
+
+    setVisible(visible) {
+        if (visible)
+            this.element.classList.remove("hidden");
+        else
+            this.element.classList.add("hidden");
     }
 }
 
