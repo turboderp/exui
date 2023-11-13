@@ -72,8 +72,8 @@ export class SessionSettings {
         this.sss_i_repRange     = new controls.SettingsSlider("sss-item-left", "Rep. range",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0,     0, 4096, { "0": "off" },                   this.settings, "repr",         () => { this.updateView(true); });
 
         this.sss_i_mirostat     = new controls.CheckboxLabel("sss-item-right clickable", "Mirostat", this.settings, "mirostat", () => { this.updateView(true); });
-        this.sss_i_mirostat_tau = new controls.SettingsSlider("sss-item-left", "Mirostat Tau",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,  0.01,   10, null,                             this.settings, "mirostat_tau", () => { this.updateView(true); });
-        this.sss_i_mirostat_eta = new controls.SettingsSlider("sss-item-left", "Mirostat Eta",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,  0.01,    5, null,                             this.settings, "mirostat_eta", () => { this.updateView(true); });
+        this.sss_i_mirostat_tau = new controls.SettingsSlider("sss-item-left", "Mirostat tau",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,  0.01,   10, null,                             this.settings, "mirostat_tau", () => { this.updateView(true); });
+        this.sss_i_mirostat_eta = new controls.SettingsSlider("sss-item-left", "Mirostat eta",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,  0.01,    5, null,                             this.settings, "mirostat_eta", () => { this.updateView(true); });
 
         this.sss_sampling.inner.appendChild(this.sss_i_temperature.element);
         this.sss_sampling.inner.appendChild(this.sss_i_topK.element);
