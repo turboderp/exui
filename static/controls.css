@@ -19,6 +19,7 @@
     user-select: none;
     padding-left: 5px;
     height: 32px;
+    color: var(--textcolor-text);
 }
 
 .checkbox.short {
