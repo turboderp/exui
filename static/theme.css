@@ -52,6 +52,9 @@
     --slider-track-color: rgb(77, 77, 77);
     --slider-hover-color: rgb(88, 88, 88);
 
+    --checkbox-accent-color: rgba(64, 64, 128, 255);
+    --checkbox-accent-border: rgba(96, 96, 192, 255);
+
     --select-brightness: 125%;
     --hover-brightness: 150%;
 
@@ -170,6 +173,9 @@
 
     --progress-color: rgba(142, 175, 222, 255);
     --progress-color-back: rgba(47, 57, 80, 255);
+
+    --checkbox-accent-color: rgba(142, 175, 222, 255);
+    --checkbox-accent-border: rgba(142, 175, 222, 255);
 }
 
 /* Unholy */
@@ -221,4 +227,6 @@
     --slider-track-color: rgb(197, 197, 197);
     --slider-hover-color: rgb(88, 88, 88);
 
+    --checkbox-accent-color: rgba(242, 162, 92, 255);
+    --checkbox-accent-border: rgba(242, 162, 92, 255);
 }

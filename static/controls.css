@@ -9,6 +9,7 @@
     padding-top: 5px;
     padding-bottom: 5px;
     margin-right: 5px;
+    accent-color: var(--checkbox-accent-color);
 }
 
 .checkbox-label {
@@ -134,4 +135,32 @@
     display: none;
 }
 
+
+input[type="checkbox"] {
+      display: none;
+}
+
+input[type="checkbox"] + label:before {
+      border: 1px solid var(--textcolor-dim);
+      content: "\00a0";
+      display: inline-block;
+      font: 13px/1em sans-serif;
+      height: 13px;
+      margin: 0 .25em 0 0;
+      margin-right: 7px;
+      padding: 0;
+      width: 13px;
+}
+
+input[type="checkbox"]:checked + label:before {
+      border: 1px solid var(--checkbox-accent-border);
+      background: var(--checkbox-accent-color);
+      color: var(--textcolor-text);
+      content: "✓";
+      text-align: center;
+}
+
+input[type="checkbox"]:checked + label:after {
+      font-weight: bold;
+}
 
