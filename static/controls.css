@@ -135,13 +135,13 @@
     display: none;
 }
 
-
 input[type="checkbox"] {
       display: none;
 }
 
 input[type="checkbox"] + label:before {
       border: 1px solid var(--textcolor-dim);
+      border-radius: 3px;
       content: "\00a0";
       display: inline-block;
       font: 13px/1em sans-serif;
