@@ -86,7 +86,7 @@ def remove_model(data):
 def update_model(data):
     global models
 
-    print(data)
+    # print(data)
 
     if data["model_uuid"] is None or data["model_uuid"] == "new":
         new_model = {}
