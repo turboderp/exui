@@ -65,9 +65,9 @@ export class Chat {
         });
 
         let label = new controls.EditableLabel(name, false, (new_name) => {
-            this.currentView.setName(new_name, () => {
+            this.currentView.setName(new_name, (response) => {
                 if (sessionID == "new") {
-                    this.lastSessionUUID = this.currentView.sessionID;
+                    this.lastSessionUUID = response.session.session_uuid;
                     this.onEnter();
                 } else {
                 }
@@ -203,7 +203,7 @@ class SessionView {
             .then(response => response.json())
             .then(response => {
                 globals.receiveGlobals(response);
-                this.chatSettings = response.settings;
+                this.chatSettings = response.session_settings;
                 this.history = new Map();
                 this.name = "New session";
                 this.populate();
@@ -248,13 +248,13 @@ class SessionView {
             fetch("/api/new_session", { method: "POST", headers: { "Content-Type": "application/json", }, body: JSON.stringify(packet) })
             .then(response => response.json())
             .then(response => {
-                if (post) post();
+                if (post) post(response);
             });
         } else {
             fetch("/api/rename_session", { method: "POST", headers: { "Content-Type": "application/json", }, body: JSON.stringify(packet) })
             .then(response => response.json())
             .then(response => {
-                if (post) post();
+                if (post) post(response);
             });
         }
     }

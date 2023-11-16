@@ -185,3 +185,15 @@ function restoreFocus(focus) {
 }
 */
 
+export function escape(str) {
+    return str
+        .replace(/\\/g, '\\\\')
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t')
+        .replace(/\v/g, '\\v')
+//        .replace(/\b/g, '\\b')
+        .replace(/\f/g, '\\f')
+//        .replace(/"/g, '\\"')
+//        .replace(/'/g, "\\'");
+}

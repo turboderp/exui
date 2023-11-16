@@ -1,5 +1,7 @@
 import * as util from "./util.js";
 
+let control_serial = 0;
+
 export class Label {
     constructor(className, data, data_id) {
         this.data = data;
@@ -72,7 +74,8 @@ export class LabelTextbox {
         if (this.cb_auto_id) {
             this.chkb = document.createElement("input");
             this.chkb.type = "checkbox";
-            this.chkb.id = "checkbox_" + cb_auto_id;
+            this.chkb.id = "checkbox_" + control_serial + "_" + cb_auto_id;
+            control_serial++;
             this.chkb.className = "checkbox";
             this.element.appendChild(this.chkb);
             this.chkb_label = document.createElement("label");
@@ -225,7 +228,8 @@ export class LabelCheckbox {
 
         this.chkb = document.createElement("input");
         this.chkb.type = "checkbox";
-        this.chkb.id = "checkbox_" + data_id;
+        this.chkb.id = "checkbox_" + control_serial + "_" + data_id;
+        control_serial++;
         this.chkb.className = "checkbox";
         this.element.appendChild(this.chkb);
         this.chkb_label = document.createElement("label");

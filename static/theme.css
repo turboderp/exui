@@ -6,6 +6,11 @@
     --font-size-chat: 16px;
     --font-size-medium: 14px;
     --font-size-small: 12px;
+    --font-size-tiny: 9px;
+
+    --font-family-notepad: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+    --font-size-notepad: 16px;
+    --line-height-notepad: 23px;
 
     --textcolor-menu: rgba(217, 217, 217, 255);
     --textcolor-text: rgba(217, 217, 217, 255);
@@ -59,6 +64,12 @@
     --hover-brightness: 150%;
 
     --show-stats: none;
+
+    --token-color-1: rgb(79, 66, 81);
+    --token-color-2: rgb(80, 70, 104);
+    --token-color-3: rgb(83, 59, 75);
+    --token-color-4: rgb(104, 62, 75);
+    --token-color-5: rgb(113, 91, 83);
 }
 
 /* Dark */
@@ -176,6 +187,12 @@
 
     --checkbox-accent-color: rgba(142, 175, 222, 255);
     --checkbox-accent-border: rgba(142, 175, 222, 255);
+
+    --token-color-1: rgb(224, 187, 228);
+    --token-color-2: rgb(199, 176, 255);
+    --token-color-3: rgb(210, 145, 188);
+    --token-color-4: rgb(254, 200, 216);
+    --token-color-5: rgb(255, 223, 211);
 }
 
 /* Unholy */
@@ -229,4 +246,10 @@
 
     --checkbox-accent-color: rgba(242, 162, 92, 255);
     --checkbox-accent-border: rgba(242, 162, 92, 255);
+
+    --token-color-1: rgb(224, 187, 228);
+    --token-color-2: rgb(199, 176, 255);
+    --token-color-3: rgb(210, 145, 188);
+    --token-color-4: rgb(254, 200, 216);
+    --token-color-5: rgb(255, 223, 211);
 }

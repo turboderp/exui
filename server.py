@@ -8,9 +8,10 @@ import webbrowser
 
 import torch
 
-from backend.models import update_model, load_models, get_model_info, list_models, remove_model, load_model, unload_model
+from backend.models import update_model, load_models, get_model_info, list_models, remove_model, load_model, unload_model, get_loaded_model
 from backend.config import set_config_dir, global_state
 from backend.sessions import list_sessions, set_session, get_session, get_default_session_settings, new_session, delete_session, set_cancel_signal
+from backend.notepads import list_notepads, set_notepad, get_notepad, get_default_notepad_settings, new_notepad, delete_notepad
 from backend.prompts import list_prompt_formats
 from backend.settings import get_settings, set_settings
 
@@ -109,7 +110,8 @@ def api_get_default_settings():
     if verbose: print("/api/get_default_settings")
     with api_lock:
         result = { "result": "ok",
-                   "settings": get_default_session_settings(),
+                   "session_settings": get_default_session_settings(),
+                   "notepad_settings": get_default_notepad_settings(),
                    "prompt_formats": list_prompt_formats() }
         return json.dumps(result) + "\n"
 
@@ -289,6 +291,103 @@ def api_set_settings():
         result = { "result": "ok" }
         if verbose: print("->", result)
         return json.dumps(result) + "\n"
+
+@app.route("/api/list_notepads")
+def api_list_notepads():
+    global api_lock, verbose
+    if verbose: print("/api/list_notepads")
+    with api_lock:
+        n, c = list_notepads()
+        result = { "result": "ok", "notepads": n, "current_notepad": c }
+        if verbose: print("-> (...)")
+        return json.dumps(result) + "\n"
+
+@app.route("/api/set_notepad", methods=['POST'])
+def api_set_notepad():
+    global api_lock, verbose
+    if verbose: print("/api/set_notepad")
+    with api_lock:
+        data = request.get_json()
+        if verbose: print("<-", data)
+        r = set_notepad(data)
+        if r["notepad"] is not None:
+            result = { "result": "ok",
+                       "notepad": r["notepad"] }
+            if "tokenized_text" in r:
+                result["tokenized_text"] = r["tokenized_text"]
+            if verbose: print("-> (...)")
+        else:
+            result = { "result": "fail" }
+            if verbose: print("->", result)
+        return json.dumps(result) + "\n"
+
+@app.route("/api/new_notepad", methods=['POST'])
+def api_new_notepad():
+    global api_lock, verbose
+    if verbose: print("/api/new_notepad")
+    with api_lock:
+        data = request.get_json()
+        if verbose: print("<-", data)
+        notepad = new_notepad()
+        if "settings" in data: get_notepad().update_settings(data["settings"])
+        if "text" in data: get_notepad().set_text(data["text"])
+        if "new_name" in data: get_notepad().rename(data)
+        result = { "result": "ok", "notepad": notepad }
+        if verbose: print("-> (...)")
+        return json.dumps(result) + "\n"
+
+@app.route("/api/rename_notepad", methods=['POST'])
+def api_rename_notepad():
+    global api_lock, verbose
+    if verbose: print("/api/rename_notepad")
+    with api_lock:
+        data = request.get_json()
+        if verbose: print("<-", data)
+        s = get_notepad()
+        s.rename(data)
+        result = { "result": "ok" }
+        if verbose: print("->", result)
+        return json.dumps(result) + "\n"
+
+@app.route("/api/delete_notepad", methods=['POST'])
+def api_delete_notepad():
+    global api_lock, verbose
+    if verbose: print("/api/delete_notepad")
+    with api_lock:
+        data = request.get_json()
+        if verbose: print("<-", data)
+        delete_notepad(data["notepad_uuid"]);
+        result = { "result": "ok" }
+        if verbose: print("->", result)
+        return json.dumps(result) + "\n"
+
+@app.route("/api/update_notepad_settings", methods=['POST'])
+def update_notepad_settings():
+    global api_lock, verbose
+    if verbose: print("/api/update_notepad_settings")
+    with api_lock:
+        n = get_notepad()
+        data = request.get_json()
+        if verbose: print("<-", data)
+        n.update_settings(data["settings"])
+        result = { "result": "ok" }
+        if verbose: print("->", result)
+        return json.dumps(result) + "\n"
+
+@app.route("/api/set_notepad_text", methods=['POST'])
+def set_notepad_text():
+    global api_lock, verbose
+    if verbose: print("/api/set_notepad_text")
+    with api_lock:
+        n = get_notepad()
+        data = request.get_json()
+        if verbose: print("<-", data)
+        n.set_text(data["text"])
+        tokenized_text = n.get_tokenized_text()
+        result = { "result": "ok", "tokenized_text": tokenized_text }
+        if verbose: print("-> (...)")
+        return json.dumps(result) + "\n"
+
 
 # Prepare torch
 
