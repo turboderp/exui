@@ -36,6 +36,21 @@ Then run the web server with the included server.py:
 ```
 python server.py
 ```
+### Running locally with pre-made scripts
+
+On windows:
+```
+run.cmd
+```
+On Linux:
+```
+start.sh```
+
+scripts are avalible
+
+### Running on Google Colab
+
+Colab note for Exui is avalible at :https://colab.research.google.com/github/turboderp/exui/blob/master/colab.ipynb
 
 Your browser should automatically open on the default IP/port. Config and sessions are stored in `~/exui` by default.
 
