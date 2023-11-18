@@ -26,8 +26,10 @@ export class NotepadSettings {
 
         this.sss_i_maxTokens   = new controls.SettingsSlider("sss-item-left", "Max tokens",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 2048, null,                             this.settings, "maxtokens",    () => { this.updateView(true); });
         this.sss_i_chunkTokens = new controls.SettingsSlider("sss-item-left", "Chunk tokens",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 2048, null,                             this.settings, "chunktokens",  () => { this.updateView(true); });
+        this.sss_stopConditions = new controls.CollapsibleSection(null, "Stop conditions");
         this.sss_genParams.inner.appendChild(this.sss_i_maxTokens.element);
         this.sss_genParams.inner.appendChild(this.sss_i_chunkTokens.element);
+        this.element.appendChild(this.sss_stopConditions.element);
 
         // Sampling
 
@@ -57,9 +59,51 @@ export class NotepadSettings {
         this.sss_sampling.inner.appendChild(this.sss_i_mirostat_tau.element);
         this.sss_sampling.inner.appendChild(this.sss_i_mirostat_eta.element);
 
-        // .
+        // Stop conditions
+
+        this.populate_stop_conditions();
 
         this.updateView();
+    }
+
+    populate_stop_conditions() {
+        this.sss_stopConditions.inner.innerHTML = "";
+        this.sss_i_stopconditions = [];
+
+        for (let i = 0; i < this.settings.stop_conditions.length; i++) {
+            this.sss_i_stopconditions[i] = new controls.CheckboxTextboxButton(
+                "stop_condition_" + i,
+                "sss-item-left",
+                "Incl.",
+                "sss-item-mid sss-item-textbox",
+                "",
+                this.settings,
+                "stop_conditions",
+                i,
+                "text",
+                "inclusive",
+                (v) => { return v != ""; },
+                () => { this.updateView(true); },
+                "✕ Remove",
+                () => {
+                    this.settings.stop_conditions.splice(i, 1);
+                    this.populate_stop_conditions();
+                    this.updateView(true);
+                }
+            );
+        }
+
+        for (let i = 0; i < this.settings.stop_conditions.length; i++)
+            this.sss_stopConditions.inner.appendChild(this.sss_i_stopconditions[i].element);
+
+        if (this.settings.stop_conditions.length < 10) {
+            this.sss_i_addStopCondition = new controls.LinkButton("+ Add...", null, () => {
+                this.settings.stop_conditions.push({text: "", inclusive: false});
+                this.populate_stop_conditions();
+                this.updateView(true);
+            }, "sss-item-link");
+            this.sss_stopConditions.inner.appendChild(this.sss_i_addStopCondition.element);
+        }
     }
 
     updateView(send = false) {
@@ -77,7 +121,7 @@ export class NotepadSettings {
     }
 
     send(post = null) {
-        console.log(this.settings);
+        //console.log(this.settings);
 
         let packet = {};
         packet.settings = this.settings;

@@ -6,7 +6,7 @@
     --font-size-chat: 16px;
     --font-size-medium: 14px;
     --font-size-small: 12px;
-    --font-size-tiny: 9px;
+    --font-size-tiny: 10px;
 
     --font-family-notepad: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
     --font-size-notepad: 16px;
@@ -130,7 +130,11 @@
     --background-color-code: rgba(23, 26, 28, 255);
     --border-color-code: rgba(44, 47, 52, 255);
     --textcolor-code: rgba(200, 217, 208, 255);
+
+    --checkbox-accent-color: rgba(84, 90, 118, 255);
+    --checkbox-accent-border: rgba(84, 90, 118, 255);
 }
+
 
 /* Light */
 

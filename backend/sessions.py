@@ -162,14 +162,14 @@ class Session:
 
 
     def load(self):
-        print(f"Loading session: {self.filename()}")
+        # print(f"Loading session: {self.filename()}")
         with open(self.filename(), "r") as s:
             j = json.load(s)
         self.from_json(j)
 
 
     def save(self):
-        print(f"Saving session: {self.filename()}")
+        # print(f"Saving session: {self.filename()}")
         jd = json.dumps(self.to_json(), indent = 4)
         with open(self.filename(), "w") as outfile:
             outfile.write(jd)

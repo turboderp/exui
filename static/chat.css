@@ -95,7 +95,9 @@
     align-items: center;
     display: flex;
     width: 60px;
+    height: 25px;
     justify-content: center;
+    padding-top: 8px;
 }
 
 .session-input {
@@ -329,6 +331,7 @@
     min-width: 90px;
     align-items: center;
     display: flex;
+    height: 28px;
 }
 
 .sss-item-sep {

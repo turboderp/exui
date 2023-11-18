@@ -32,12 +32,13 @@ export class Notepad {
         this.currentView = null;
     }
 
-    onEnter(getResponse = false) {
+    onEnter(getResponse = false, post = null) {
         fetch("/api/list_notepads")
         .then(response => response.json())
         .then(response => {
             globals.receiveGlobals(response);
             this.populateNotepadList(response, getResponse);
+            if (post) post();
         });
     }
 
@@ -131,20 +132,40 @@ class NotepadView {
         this.element.appendChild(this.editorView);
         this.element.appendChild(this.settingsView);
 
-        this.editor = document.createElement("div");
+        this.editor = document.createElement("textarea");
         this.editor.className = "notepad-editor";
-        this.editor.contentEditable = "true";
         this.editor.spellcheck = false;
-        this.editor.useRichtext = true;
+        //this.editor.contentEditable = "true";
+        //this.editor.useRichtext = true;
         this.editor.addEventListener("paste", (event) => { this.paste(event); });
         this.editor.addEventListener("input", (event) => { this.input(event); });
         this.editor.addEventListener("blur", (event) => { this.blur(event); });
+        this.editor.addEventListener("keydown", (event) => { this.keydown(event); });
+
+        document.addEventListener("keydown", (event) => { this.keydownView(event); });
 
         this.divider = util.newDiv("notepad-view-divider", "notepad-view-divider");
         this.tokenView = util.newDiv("token-view", "token-view");
         this.tokenViewInner = util.newDiv("token-view-inner", "token-view-inner");
+        this.controlBar = util.newDiv("notepad-bar", "notepad-bar");
+
+        this.generateTokenButton = new controls.Button("⏵ Token", () => { this.generateToken() }, "notepad-generate-button", "ctrl + enter");
+        this.generateButton = new controls.Button("⯮ Generate", () => { this.generate() }, "notepad-generate-button", "shift + enter");
+        this.cancelButton = new controls.Button("⏹ Stop", () => { this.cancelGenerate() }, "notepad-generate-button", "escape");
+        if (!notepadID || notepadID == "new" || !globals.g.loadedModelUUID) {
+            this.generateTokenButton.setEnabled(false);
+            this.generateButton.setEnabled(false);
+            this.cancelButton.setEnabled(false);
+        }
+        this.cancelButton.setEnabled(false);
+        this.cancelButton.setVisible(false);
+
+        this.controlBar.appendChild(this.generateTokenButton.element);
+        this.controlBar.appendChild(this.generateButton.element);
+        this.controlBar.appendChild(this.cancelButton.element);
 
         this.editorView.appendChild(this.editor);
+        this.editorView.appendChild(this.controlBar);
         this.editorView.appendChild(this.divider);
         this.editorView.appendChild(this.tokenView);
         this.tokenView.appendChild(this.tokenViewInner);
@@ -154,11 +175,11 @@ class NotepadView {
         document.addEventListener("mouseup", (event) => { this.isResizing = false; });
         document.addEventListener("mousemove", (event) => {
             if (!this.isResizing) return;
-            let r = this.editor.getBoundingClientRect();
+            //let r = this.editor.getBoundingClientRect();
             let r2 = this.element.getBoundingClientRect();
-            let newHeight = event.clientY - r.top - 35;
-            let newHeight2 = r2.height - newHeight - 70;
-            if (newHeight2 < 5) newHeight2 = 0;
+            let newHeight = event.clientY - 95;
+            let newHeight2 = r2.height - newHeight - 165;
+            //if (newHeight2 < 5) newHeight2 = 0;
             this.editor.style.height = "" + newHeight + "px";
             this.tokenView.style.height = "" + newHeight2 + "px";
         });
@@ -240,17 +261,19 @@ class NotepadView {
     }
 
     setText(text) {
-        this.editor.innerHTML = "";
-        let lines = text.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-            let div = document.createElement("div");
-            let t = lines[i];
-            if (t.startsWith(" ")) t = "\xa0" + t.slice(1);
-            t = t.replace(/( +) /g, function(match, p1) { return p1.replace(/ /g, "\xa0") + " "; });
-            div.innerText = t;
-            if (lines[i] == "") div.innerHTML += "<br>";
-            this.editor.appendChild(div);
-        }
+        this.editor.value = text;
+        this.restoreCursor();
+//        this.editor.innerHTML = "";
+//        let lines = text.split('\n');
+//        for (let i = 0; i < lines.length; i++) {
+//            let div = document.createElement("div");
+//            let t = lines[i];
+//            if (t.startsWith(" ")) t = "\xa0" + t.slice(1);
+//            t = t.replace(/( +) /g, function(match, p1) { return p1.replace(/ /g, "\xa0") + " "; });
+//            div.innerText = t;
+//            if (lines[i] == "") div.innerHTML += "<br>";
+//            this.editor.appendChild(div);
+//        }
     }
 
     getTextFrom(element) {
@@ -270,19 +293,37 @@ class NotepadView {
     }
 
     getText() {
-        let t = this.getTextFrom(this.editor).slice(0, -1);
-        return t;
+        //let t = this.getTextFrom(this.editor).slice(0, -1);
+        //return t;
+        return this.editor.value;
+    }
+
+    saveCursor() {
+        this.parent.selectionStart = this.editor.selectionStart;
+        this.parent.selectionEnd = this.editor.selectionEnd;
+        //console.log("save");
+    }
+
+    restoreCursor() {
+        if (this.parent.selectionStart) {
+            console.log("restore");
+            this.editor.setSelectionRange(this.parent.selectionStart, this.parent.selectionEnd);
+            this.editor.focus();
+            this.parent.selectionStart = null;
+            this.parent.selectionEnd = null;
+        }
     }
 
     input(event) {
         if (!this.notepadID || this.notepadID == "new") {
+            this.saveCursor();
             let packet = {};
-            packet.text = this.editor.innerText;
+            packet.text = this.getText();
             fetch("/api/new_notepad", { method: "POST", headers: { "Content-Type": "application/json", }, body: JSON.stringify(packet) })
             .then(response => response.json())
             .then(response => {
                 this.parent.lastNotepadUUID = response.notepad.notepad_uuid;
-                this.parent.onEnter();
+                this.parent.onEnter(false);
             });
             return;
         }
@@ -310,7 +351,7 @@ class NotepadView {
         fetch("/api/set_notepad_text", { method: "POST", headers: { "Content-Type": "application/json", }, body: JSON.stringify(packet) })
         .then(response => response.json())
         .then(response => {
-            console.log(response);
+            //console.log(response);
             if (response.tokenized_text) this.updateTokens(response.tokenized_text);
         });
     }
@@ -351,6 +392,199 @@ class NotepadView {
             this.tokenView.style.height = prevHeight;
         }
     }
+
+    keydown(event) {
+        if (event.key === "Enter" && event.shiftKey) {
+            event.preventDefault();
+            if (this.generateButton.enabled)
+                this.generate();
+        }
+        if (event.key === "Enter" && event.ctrlKey) {
+            event.preventDefault();
+            if (this.generateTokenButton.enabled)
+                this.generateToken();
+        }
+    }
+
+    keydownView(event) {
+        if (event.key === "Escape") {
+            if (this.cancelButton.enabled) {
+                this.cancelGenerate();
+            }
+        }
+    }
+
+    generateToken() {
+        if (!globals.g.loadedModelUUID) return;
+
+        this.generateButton.setEnabled(false, 200);
+        this.generateTokenButton.setEnabled(false, 200);
+        this.editor.disabled = true;
+
+        let pos = this.editor.selectionStart;
+        let end = this.editor.selectionEnd;
+        let text = this.editor.value;
+
+        if (end > pos) {
+            this.editor.value = this.editor.value.slice(0, pos) + this.editor.value.slice(end);
+        }
+
+        let packet = {};
+        packet.position = pos;
+        packet.context = this.editor.value.slice(0, pos);
+        packet.context_post = this.editor.value.slice(pos);
+
+        fetch("/api/notepad_single_token", { method: "POST", headers: { "Content-Type": "application/json", }, body: JSON.stringify(packet) })
+        .then(response => response.json())
+        .then(response => {
+            if (response.text)
+            {
+//                console.log(pos, response.text.length);
+                this.editor.value = packet.context + response.text + packet.context_post;
+                this.editor.setSelectionRange(pos + response.text.length, pos + response.text.length);
+                this.updateTokens(response.tokenized_text);
+                this.editor.disabled = false;
+                this.editor.focus();
+            }
+            this.generateButton.setEnabled(true);
+            this.generateTokenButton.setEnabled(true);
+            this.editor.disabled = false;
+        });
+    }
+
+    generate() {
+        if (!globals.g.loadedModelUUID) return;
+
+        this.generateButton.setEnabled(false);
+        this.generateButton.setVisible(false);
+        this.cancelButton.setEnabled(true);
+        this.cancelButton.setVisible(true);
+        this.generateTokenButton.setEnabled(false);
+        this.editor.disabled = true;
+
+        let pos = this.editor.selectionStart;
+        let end = this.editor.selectionEnd;
+        let text = this.editor.value;
+
+        if (end > pos) {
+            this.editor.value = this.editor.value.slice(0, pos) + this.editor.value.slice(end);
+        }
+
+        this.receiveStreamPos = pos;
+
+        let packet = {};
+        packet.position = pos;
+        packet.context = this.editor.value.slice(0, pos);
+        packet.context_post = this.editor.value.slice(pos);
+
+        let timeout = new Promise((resolve, reject) => {
+            let id = setTimeout(() => {
+                clearTimeout(id);
+                reject('No response from server')
+            }, 10000)
+        });
+
+        let fetchRequest = fetch("/api/notepad_generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", },
+            body: JSON.stringify(packet)
+        });
+
+        const self = this;
+        Promise.race([fetchRequest, timeout])
+        .then(response => {
+            if (response.ok) {
+                return response.body;
+            } else {
+                throw new Error("Network response was not ok.");
+            }
+        })
+        .then(stream => {
+            let reader = stream.getReader();
+            let decoder = new TextDecoder();
+            let data = '';
+            reader.read().then(function process({done, value}) {
+                // console.log("Received chunk:", decoder.decode(value));
+                if (done) {
+                    //console.log("DONE");
+                    self.generateButton.setEnabled(true);
+                    self.generateButton.setVisible(true);
+                    self.generateTokenButton.setEnabled(true);
+                    self.cancelButton.setEnabled(false);
+                    self.cancelButton.setVisible(false);
+                    self.editor.disabled = false;
+                    self.editor.focus();
+                    return;
+                }
+                data += decoder.decode(value, {stream: true});
+                let lines = data.split('\n');
+                for (let i = 0; i < lines.length - 1; i++) {
+                    let json = null;
+                    try {
+                        json = JSON.parse(lines[i]);
+                    } catch(e) {
+                        console.error("Invalid JSON:", lines[i]);
+                        break;
+                    }
+                    if (json.result == "fail") {
+                        console.error('Error:', json.error);
+                        self.generateButton.setEnabled(true);
+                        self.generateButton.setVisible(true);
+                        self.generateTokenButton.setEnabled(true);
+                        self.cancelButton.setEnabled(false);
+                        self.cancelButton.setVisible(false);
+                        self.editor.disabled = false;
+                        self.editor.focus();
+                        return;
+                    } else {
+                        self.receivedStreamResponse(json);
+                    }
+                }
+                data = lines[lines.length - 1];
+                reader.read().then(process);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            self.enableInput();
+            self.focusInputField();
+        })
+    }
+
+    receivedStreamResponse(response) {
+        //console.log(response);
+
+        if (response.result == "stream_chunk") {
+            let chunk = response.text;
+            let pos = this.receiveStreamPos;
+            this.editor.value = this.editor.value.slice(0, pos) + chunk + this.editor.value.slice(pos);
+            pos += chunk.length;
+            this.editor.setSelectionRange(pos, pos);
+            this.receiveStreamPos = pos;
+        }
+
+        if (response.result == "ok") {
+            if (response.tokenized_text) {
+                this.updateTokens(response.tokenized_text);
+            }
+        }
+
+        if (response.result == "cancel") {
+            if (response.tokenized_text) {
+                this.updateTokens(response.tokenized_text);
+            }
+        }
+    }
+
+    cancelGenerate() {
+        this.cancelButton.setEnabled(false);
+        //console.log("cancel");
+        fetch("/api/cancel_notepad_generate")
+        .then(response => response.json())
+        .then(response => {
+        });
+    }
+
 }
 
 

@@ -11,7 +11,7 @@ import torch
 from backend.models import update_model, load_models, get_model_info, list_models, remove_model, load_model, unload_model, get_loaded_model
 from backend.config import set_config_dir, global_state
 from backend.sessions import list_sessions, set_session, get_session, get_default_session_settings, new_session, delete_session, set_cancel_signal
-from backend.notepads import list_notepads, set_notepad, get_notepad, get_default_notepad_settings, new_notepad, delete_notepad
+from backend.notepads import list_notepads, set_notepad, get_notepad, get_default_notepad_settings, new_notepad, delete_notepad, set_notepad_cancel_signal
 from backend.prompts import list_prompt_formats
 from backend.settings import get_settings, set_settings
 
@@ -239,7 +239,7 @@ def api_generate():
 def api_cancel_generate():
     global api_lock_cancel, verbose
     if verbose: print("/api/cancel_generate")
-    with api_lock:
+    with api_lock_cancel:
         set_cancel_signal()
         result = { "result": "ok" }
         if verbose: print("->", result)
@@ -362,7 +362,7 @@ def api_delete_notepad():
         return json.dumps(result) + "\n"
 
 @app.route("/api/update_notepad_settings", methods=['POST'])
-def update_notepad_settings():
+def api_update_notepad_settings():
     global api_lock, verbose
     if verbose: print("/api/update_notepad_settings")
     with api_lock:
@@ -375,7 +375,7 @@ def update_notepad_settings():
         return json.dumps(result) + "\n"
 
 @app.route("/api/set_notepad_text", methods=['POST'])
-def set_notepad_text():
+def api_set_notepad_text():
     global api_lock, verbose
     if verbose: print("/api/set_notepad_text")
     with api_lock:
@@ -387,6 +387,42 @@ def set_notepad_text():
         result = { "result": "ok", "tokenized_text": tokenized_text }
         if verbose: print("-> (...)")
         return json.dumps(result) + "\n"
+
+@app.route("/api/notepad_single_token", methods=['POST'])
+def api_notepad_single_token():
+    global api_lock, verbose
+    if verbose: print("/api/notepad_single_token")
+    with api_lock:
+        n = get_notepad()
+        data = request.get_json()
+        if verbose: print("<-", data)
+        result = n.generate_single_token(data)
+        if verbose: print("-> (...)")
+        return json.dumps(result) + "\n"
+
+
+@app.route("/api/notepad_generate", methods=['POST'])
+def api_notepad_generate():
+    global api_lock, verbose
+    if verbose: print("/api/notepad_generate")
+    with api_lock:
+        data = request.get_json()
+        if verbose: print("<-", data)
+        n = get_notepad()
+        if verbose: print("-> ...");
+        result = Response(stream_with_context(n.generate(data)), mimetype = 'application/json')
+        if verbose: print("->", result)
+        return result
+
+@app.route("/api/cancel_notepad_generate")
+def api_cancel_notepad_generate():
+    global api_lock_cancel, verbose
+    if verbose: print("/api/cancel_notepad_generate")
+    with api_lock_cancel:
+        set_notepad_cancel_signal()
+        result = { "result": "ok" }
+        if verbose: print("->", result)
+        return result
 
 
 # Prepare torch

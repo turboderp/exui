@@ -21,6 +21,14 @@ from backend.util import MultiTimer
 notepad_list: dict or None = None
 current_notepad = None
 
+# Cancel
+
+cancel_signal = False
+def set_notepad_cancel_signal():
+    global cancel_signal
+    cancel_signal = True
+
+
 def list_notepads():
     global notepad_list
 
@@ -84,8 +92,8 @@ def delete_notepad(d_notepad):
 def get_default_notepad_settings():
     return \
     {
-        "maxtokens": 1024,
-        "chunktokens": 512,
+        "maxtokens": 256,
+        "chunktokens": 64,
         "temperature": 0.8,
         "top_k": 50,
         "top_p": 0.8,
@@ -97,7 +105,8 @@ def get_default_notepad_settings():
         "typical": 0.0,
         "repp": 1.15,
         "repr": 1024,
-        "repd": 512
+        "repd": 512,
+        "stop_conditions": [ { "text": "</s>", "inclusive": False } ],
     }
 
 
@@ -108,8 +117,11 @@ class Notepad:
     text = ""
     settings: {} = None
 
+    context_head = 0
+
     def __init__(self, notepad_uuid = None):
         self.notepad_uuid = notepad_uuid
+        self.context_head = 0
 
 
     def filename(self):
@@ -153,7 +165,7 @@ class Notepad:
 
 
     def save(self):
-        print(f"Saving notepad: {self.filename()}")
+        # print(f"Saving notepad: {self.filename()}")
         jd = json.dumps(self.to_json(), indent = 4)
         with open(self.filename(), "w") as outfile:
             outfile.write(jd)
@@ -161,7 +173,7 @@ class Notepad:
 
 
     def load(self):
-        print(f"Loading notepad: {self.filename()}")
+        # print(f"Loading notepad: {self.filename()}")
         with open(self.filename(), "r") as s:
             j = json.load(s)
         self.from_json(j)
@@ -189,3 +201,217 @@ class Notepad:
             t["piece"] = m.tokenizer.extended_id_to_piece.get(token, id_to_piece[token])
             tokenized.append(t)
         return tokenized
+
+
+    def get_gen_settings(self):
+
+        gen_settings = ExLlamaV2Sampler.Settings()
+        gen_settings.temperature = self.settings["temperature"]
+        gen_settings.top_k = self.settings["top_k"]
+        gen_settings.top_p = self.settings["top_p"]
+        gen_settings.min_p = self.settings["min_p"]
+        gen_settings.tfs = self.settings["tfs"]
+        gen_settings.typical = self.settings["typical"]
+        gen_settings.mirostat = self.settings["mirostat"]
+        gen_settings.mirostat_tau = self.settings["mirostat_tau"]
+        gen_settings.mirostat_eta = self.settings["mirostat_eta"]
+        gen_settings.token_repetition_penalty = self.settings["repp"]
+        gen_settings.token_repetition_range = self.settings["repr"]
+        gen_settings.token_repetition_decay = self.settings["repr"]
+
+        if gen_settings.temperature == 0:
+            gen_settings.temperature = 1.0
+            gen_settings.top_k = 1
+            gen_settings.top_p = 0
+            gen_settings.typical = 0
+
+        return gen_settings
+
+
+    def generate_single_token(self, data):
+
+        if get_loaded_model() is None:
+            packet = { "result": "fail", "error": "No model loaded." }
+            return packet
+
+        model = get_loaded_model().model
+        generator = get_loaded_model().generator
+        tokenizer = get_loaded_model().tokenizer
+        cache = get_loaded_model().cache
+
+        # Sampling settings
+
+        gen_settings = self.get_gen_settings()
+
+        # Context
+
+        context_str = data["context"]
+        context_post_str = data["context_post"]
+        context_ids = tokenizer.encode(context_str, encode_special_tokens = True)
+
+        # Truncate past
+
+        head_ideal = context_ids.shape[-1] - model.config.max_seq_len
+
+        chunk_size = self.settings["chunktokens"]
+        while head_ideal < self.context_head - chunk_size:
+            self.context_head -= chunk_size
+        if head_ideal > self.context_head: self.context_head = head_ideal + chunk_size - 1
+        if self.context_head < 0: self.context_head = 0
+
+        context_ids = context_ids[:, self.context_head:]
+        # print(head_ideal, self.context_head)
+
+        # Generate
+
+        generator.begin_stream(context_ids, gen_settings, token_healing = True)
+        generator.set_stop_conditions([])
+
+        # Get one token
+
+        chunk, eos, tokens = generator.stream()
+        t = tokens.item()
+        if t in tokenizer.extended_id_to_piece: chunk += tokenizer.extended_id_to_piece[t]
+        self.text = context_str + chunk + context_post_str
+
+        # Save
+
+        self.save()
+
+        # Response
+
+        packet = {}
+        packet["result"] = "ok"
+        packet["text"] = chunk
+        packet["tokenized_text"] = self.get_tokenized_text()
+        return packet
+
+
+    def generate(self, data):
+        global cancel_signal
+
+        if get_loaded_model() is None:
+            packet = { "result": "fail", "error": "No model loaded." }
+            return packet
+
+        model = get_loaded_model().model
+        generator = get_loaded_model().generator
+        tokenizer = get_loaded_model().tokenizer
+        cache = get_loaded_model().cache
+
+        # Sampling settings
+
+        gen_settings = self.get_gen_settings()
+
+        # Context
+
+        context_str = data["context"]
+        context_post_str = data["context_post"]
+        full_context_ids = tokenizer.encode(context_str, encode_special_tokens = True)
+        build_str = ""
+
+        # Stop conditions
+
+        exclusive_sc = []
+        inclusive_sc = []
+        for stop_condition in self.settings["stop_conditions"]:
+            text = stop_condition["text"].encode().decode('unicode_escape')
+            inclusive = stop_condition["inclusive"]
+            if inclusive:
+                inclusive_sc.append(text)
+            else:
+                if stop_condition["text"] in tokenizer.extended_piece_to_id:
+                    exclusive_sc.append(tokenizer.extended_piece_to_id[text])
+                else:
+                    exclusive_sc.append(text)
+
+        # Truncate past
+
+        head_ideal = full_context_ids.shape[-1] - model.config.max_seq_len
+        chunk_size = self.settings["chunktokens"]
+        while head_ideal < self.context_head - chunk_size:
+            self.context_head -= chunk_size
+
+        # Generator loop
+
+        cancel_signal = False
+
+        total_tokens = 0
+        max_tokens = self.settings["maxtokens"]
+        prev_head = -1
+        token_healing = True
+        while True:
+
+            if cancel_signal:
+                break
+
+            # Adjust context
+
+            head_ideal = full_context_ids.shape[-1] - model.config.max_seq_len
+            if head_ideal > self.context_head: self.context_head = head_ideal + chunk_size - 1
+            if self.context_head < 0: self.context_head = 0
+
+            # Begin stream
+
+            if self.context_head != prev_head:
+                prev_head = self.context_head
+                context_ids = full_context_ids[:, self.context_head:]
+                generator.begin_stream(context_ids, gen_settings, token_healing = token_healing)
+                generator.set_stop_conditions(exclusive_sc)
+                token_healing = False
+
+            # Get single token
+
+            chunk, eos, tokens = generator.stream()
+            for i in range(tokens.shape[-1]):
+                t = tokens[0, i].item()
+                if t in tokenizer.extended_id_to_piece: chunk += tokenizer.extended_id_to_piece[t]
+            build_str += chunk
+            self.text = context_str + build_str + context_post_str
+
+            # Stop conditions
+
+            total_tokens += 1
+            if total_tokens >= max_tokens: eos = True
+            else:
+                for s in inclusive_sc:
+                    if s in build_str:
+                        extra_chars = len(build_str) - (build_str.find(s) + len(s))
+                        if extra_chars > 0:
+                            chunk = chunk[:-extra_chars]
+                            build_str = build_str[:-extra_chars]
+                        eos = True
+                        break
+
+            # Stream
+
+            if chunk != "":
+                packet = {}
+                packet["result"] = "stream_chunk"
+                packet["text"] = chunk
+                yield json.dumps(packet) + "\n"
+
+            if eos: break
+
+        # Save
+
+        self.save()
+
+        # Response
+
+        packet = {}
+        if cancel_signal:
+            packet["result"] = "cancel"
+        else:
+            packet["result"] = "ok"
+        packet["tokenized_text"] = self.get_tokenized_text()
+        yield json.dumps(packet) + "\n"
+
+        packet = {}
+        packet["result"] = "ok"
+        return packet
+
+
+
+
+

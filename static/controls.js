@@ -142,6 +142,106 @@ export class LabelTextboxButton extends LabelTextbox {
     }
 }
 
+export class CheckboxTextboxButton {
+    constructor(nameid, classNameCheckbox, textCheckbox, classNameTextbox, placeholder, data, arrayName, index, data_id_text, data_id_cb, validateFunc, updateFunc, buttonText, buttonFunc) {
+
+        this.data = data;
+        this.data_id_text = data_id_text;
+        this.data_id_cb = data_id_cb;
+        this.arrayName = arrayName;
+        this.index = index;
+        this.element = util.newVFlex("vflex_line");
+
+        // Checkbox
+
+        this.cb = util.newDiv(null, classNameCheckbox);
+
+        this.chkb = document.createElement("input");
+        this.chkb.type = "checkbox";
+        this.chkb.id = "checkbox_" + control_serial + "_" + nameid;
+        control_serial++;
+        this.chkb.className = "checkbox";
+
+        this.chkb_label = document.createElement("label");
+        this.chkb_label.htmlFor = this.chkb.id;
+        this.chkb_label.className = "checkbox-label";
+        this.chkb_label.innerHTML = textCheckbox;
+
+        this.cb.appendChild(this.chkb);
+        this.cb.appendChild(this.chkb_label);
+        this.element.appendChild(this.cb);
+
+        this.chkb.addEventListener("change", () => {
+            this.data[this.arrayName][this.index][this.data_id_cb] = this.chkb.checked;
+            if (updateFunc) updateFunc();
+        });
+
+        // Textbox
+
+        this.tb = document.createElement("input");
+        this.tb.className = classNameTextbox;
+        this.tb.type = "text";
+
+        this.tb.addEventListener("focus", () => {
+            this.textbox_initial = this.tb.value;
+        });
+
+        this.tb.addEventListener("focusout", () => {
+            if (this.textbox_initial != this.tb.value) {
+                if (!validateFunc || validateFunc(this.tb.value)) {
+                    this.data[this.arrayName][this.index][this.data_id_text] = this.interpret(this.tb.value);
+                    if (updateFunc) updateFunc();
+                } else {
+                    this.tb.value = this.textbox_initial;
+                }
+            }
+        });
+
+        this.tb.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                this.tb.value = this.textbox_initial;
+                this.tb.blur();
+                event.preventDefault();
+            }
+            if (event.key === "Enter" && !event.shiftKey) {
+                this.tb.blur();
+            }
+        });
+
+        this.element.appendChild(this.tb);
+
+        // Button
+
+        this.buttonFunc = buttonFunc;
+
+        this.button = document.createElement("span");
+        this.button.className = "linkbutton enabled";
+        this.button.innerHTML = buttonText;
+
+        this.button.addEventListener("click", () => {
+            if (this.buttonFunc) this.buttonFunc();
+        });
+
+        this.element.appendChild(this.button);
+
+        this.refresh();
+    }
+
+    interpret(value) {
+        return value;
+    }
+
+    refresh() {
+        //console.log(this.data);
+        this.chkb.checked = this.data[this.arrayName][this.index][this.data_id_cb];
+
+        let v = this.data[this.arrayName][this.index][this.data_id_text];
+        v = v ? v : null;
+        this.tb.value = v;
+    }
+}
+
+
 export class LabelNumbox extends LabelTextbox {
     constructor(classNameLabel, textLabel, className, placeholder, data, data_id, min, max, decimals, updateFunc, cb_auto_id = null) {
         super(classNameLabel, textLabel, className, placeholder, data, data_id, null, updateFunc, cb_auto_id);
@@ -259,22 +359,38 @@ export class LabelCheckbox {
 }
 
 export class Button {
-    constructor(text, clickFunc, extra_style = null) {
-        this.element = util.newDiv(null, "textbutton", text);
+    constructor(text, clickFunc, extra_style = null, extra_text = null) {
+        if (!extra_text) {
+            this.element = util.newDiv(null, "textbutton", text);
+        } else {
+            this.element = util.newDiv(null, "textbutton");
+            let div1 = util.newDiv(null, null, text);
+            let div2 = util.newDiv(null, "sub", extra_text);
+            this.element.appendChild(div1);
+            this.element.appendChild(div2);
+        }
+
         if (extra_style) this.element.classList.add(extra_style);
         this.enabled = true;
         this.clickFunc = clickFunc;
         this.hidden = false;
 
-        this.element.addEventListener("click", () => {
+        this.element.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+        });
+
+        this.element.addEventListener("click", (event) => {
             if (!this.enabled) return;
-            if (this.clickFunc) this.clickFunc();
+            if (this.clickFunc) {
+                event.preventDefault();
+                this.clickFunc();
+            }
         });
     }
 
-    setEnabled(enabled) {
+    setEnabled(enabled, delay = 0) {
         this.enabled = enabled;
-        this.refresh();
+        this.refresh(delay);
     }
 
     setHidden(hidden) {
@@ -282,13 +398,26 @@ export class Button {
         this.refresh();
     }
 
-    refresh() {
+    setVisible(visible) {
+        this.setHidden(!visible);
+    }
+
+    refresh(delay = 0) {
         if (this.enabled) {
+            if (this.disablerTimeout) {
+                clearTimeout(this.disablerTimeout);
+                this.disablerTimeout = null;
+            }
             this.element.classList.add("enabled");
             this.element.classList.remove("disabled");
         } else {
-            this.element.classList.remove("enabled");
-            this.element.classList.add("disabled");
+            if (!this.disablerTimeout) {
+                this.disablerTimeout = setTimeout(() => {
+                    this.element.classList.remove("enabled");
+                    this.element.classList.add("disabled");
+                    this.disabledTimeout = null;
+                }, delay);
+            }
         }
         if (this.hidden) {
             this.element.classList.add("hidden");
