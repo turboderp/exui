@@ -417,13 +417,15 @@ class NotepadView {
     generateToken() {
         if (!globals.g.loadedModelUUID) return;
 
-        this.generateButton.setEnabled(false, 200);
-        this.generateTokenButton.setEnabled(false, 200);
-        this.editor.disabled = true;
-
         let pos = this.editor.selectionStart;
         let end = this.editor.selectionEnd;
         let text = this.editor.value;
+
+        if (pos == 0) return;
+
+        this.generateButton.setEnabled(false, 200);
+        this.generateTokenButton.setEnabled(false, 200);
+        this.editor.disabled = true;
 
         if (end > pos) {
             this.editor.value = this.editor.value.slice(0, pos) + this.editor.value.slice(end);
@@ -455,16 +457,18 @@ class NotepadView {
     generate() {
         if (!globals.g.loadedModelUUID) return;
 
+        let pos = this.editor.selectionStart;
+        let end = this.editor.selectionEnd;
+        let text = this.editor.value;
+
+        if (pos == 0) return;
+
         this.generateButton.setEnabled(false);
         this.generateButton.setVisible(false);
         this.cancelButton.setEnabled(true);
         this.cancelButton.setVisible(true);
         this.generateTokenButton.setEnabled(false);
         this.editor.disabled = true;
-
-        let pos = this.editor.selectionStart;
-        let end = this.editor.selectionEnd;
-        let text = this.editor.value;
 
         if (end > pos) {
             this.editor.value = this.editor.value.slice(0, pos) + this.editor.value.slice(end);
