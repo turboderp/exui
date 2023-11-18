@@ -11,6 +11,7 @@ This is a simple, lightweight browser-based UI for running local inference using
 - Multiple instruct formats
 - Speculative decoding
 - Supports EXL2, GPTQ and FP16 models
+- Notepad mode
 
 ### Screenshots
 
@@ -20,6 +21,8 @@ This is a simple, lightweight browser-based UI for running local inference using
 [![chat_screenshot](doc/screenshot_4_thumb.png)](doc/screenshot_4.png)
 [![chat_screenshot](doc/screenshot_5_thumb.png)](doc/screenshot_5.png)
 [![chat_screenshot](doc/screenshot_6_thumb.png)](doc/screenshot_6.png)
+[![chat_screenshot](doc/screenshot_7_thumb.png)](doc/screenshot_7.png)
+[![chat_screenshot](doc/screenshot_8_thumb.png)](doc/screenshot_8.png)
 
 ### Running locally
 
