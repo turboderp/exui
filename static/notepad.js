@@ -186,6 +186,7 @@ class NotepadView {
 
         this.divider.innerHTML = "<div>🯊 Tokens</div><div class='divider-bar'></div>";
 
+        this.col = 1;
     }
 
     updateView(getResponse = false) {
@@ -356,41 +357,72 @@ class NotepadView {
         });
     }
 
+    createTokenDiv(token, col) {
+        let div = document.createElement("div");
+        div.className = "notepad-token";
+        div.classList.add("color-" + col);
+
+        let div1 = document.createElement("span");
+        div1.className = "notepad-token id";
+        div1.innerText = "" + token.id;
+
+        let div2 = document.createElement("span");
+        div2.className = "notepad-token piece";
+        div2.innerText = util.escape(token.piece).replace(" ", "␣");
+
+        div.appendChild(div1);
+        div.appendChild(div2);
+        return div;
+    }
+
+    compareTokens(token1, token2) {
+        return token1.piece == token2.piece && token1.id == token2.id;
+    }
+
     updateTokens(tokens) {
-        this.tokenViewInner.innerHTML = "";
+        //this.tokenViewInner.innerHTML = "";
         let prevHeight = this.tokenView.style.height;
-        let col = 1;
-        for (let i = 0; i < tokens.length; i++) {
 
-            let token = tokens[i];
-            let div = document.createElement("div");
-            div.className = "notepad-token";
-            div.classList.add("color-" + col);
-            col++;
-            if (col > 5) col = 1;
+        let prevTokens = this.prevTokens ? this.prevTokens : [];
+        let first = 0;
+        let lastNew = tokens.length;
+        let lastOld = prevTokens.length;
 
-            let div1 = document.createElement("span");
-            div1.className = "notepad-token id";
-            div1.innerText = "" + token.id;
-
-            let div2 = document.createElement("span");
-            div2.className = "notepad-token piece";
-            div2.innerText = util.escape(token.piece).replace(" ", "␣");
-
-            div.appendChild(div1);
-            div.appendChild(div2);
-
-            this.tokenViewInner.appendChild(div);
-
-            if (token.piece.includes("\n")) {
-                div = document.createElement("div");
-                div.className = "notepad-break";
-                this.tokenViewInner.appendChild(div);
-                col = 1;
-            }
-
-            this.tokenView.style.height = prevHeight;
+        while(first < lastNew && first < lastOld) {
+            if (this.compareTokens(tokens[first], prevTokens[first])) { first++; continue; }
+            if (this.compareTokens(tokens[lastNew - 1], prevTokens[lastOld - 1])) { lastNew--; lastOld--; continue; }
+            break;
         }
+
+        let firstNode = first;
+        for (let i = 0; i < first; ++i) if (prevTokens[i].piece.includes("\n")) firstNode++;
+
+        if (first < lastOld) {
+            for (let i = first; i < lastOld; ++i) {
+                this.tokenViewInner.children[firstNode].remove();
+                if (prevTokens[i].piece.includes("\n"))
+                    this.tokenViewInner.children[firstNode].remove();
+                this.tokenView.style.height = prevHeight;
+            }
+        }
+
+        if (first < lastNew) {
+            let tail = firstNode < this.tokenViewInner.children.length ? this.tokenViewInner.children[firstNode] : null;
+            for (let i = first; i < lastNew; ++i) {
+                let token = tokens[i];
+                this.tokenViewInner.insertBefore(this.createTokenDiv(token, this.col), tail);
+                this.col++;
+                if (this.col > 5) this.col = 1;
+                if (token.piece.includes("\n")) {
+                    let brdiv = document.createElement("div");
+                    brdiv.className = "notepad-break";
+                    this.tokenViewInner.insertBefore(brdiv, tail);
+                }
+                this.tokenView.style.height = prevHeight;
+            }
+        }
+
+        this.prevTokens = tokens;
     }
 
     keydown(event) {
