@@ -219,13 +219,13 @@ class ModelContainer:
             self.draft_config.model_dir = expanduser(model["draft_model_directory"])
             self.draft_config.prepare()
 
-            self.draft_config.max_seq_len = model["seq_len"]
-
             alpha = model["draft_rope_alpha"]
             if model["draft_rope_alpha_auto"]:
                 ratio = self.config.max_seq_len / self.draft_config.max_seq_len
                 alpha = -0.13436 + 0.80541 * ratio + 0.28833 * ratio ** 2
                 print(f" -- Applying draft model auto RoPE alpha = {alpha:.4f}")
+
+            self.draft_config.max_seq_len = self.config.max_seq_len
 
             self.draft_config.scale_alpha_value = alpha
             self.draft_config.max_input_len = model["chunk_size"]
