@@ -368,6 +368,7 @@ class Notepad:
                 if t in tokenizer.extended_id_to_piece: chunk += tokenizer.extended_id_to_piece[t]
             build_str += chunk
             self.text = context_str + build_str + context_post_str
+            full_context_ids = torch.cat((full_context_ids, tokens), dim = -1)
 
             # Stop conditions
 
