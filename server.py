@@ -15,6 +15,14 @@ from backend.notepads import list_notepads, set_notepad, get_notepad, get_defaul
 from backend.prompts import list_prompt_formats
 from backend.settings import get_settings, set_settings
 
+
+if os.name == "nt":
+    # Fix Windows inferring text/plain MIME type for static files
+    # https://stackoverflow.com/questions/59355194/
+    import mimetypes
+    mimetypes.add_type("application/javascript", ".js")
+    mimetypes.add_type("text/css", ".css")
+
 app = Flask("ExUI")
 app.static_folder = 'static'
 api_lock = Lock()
