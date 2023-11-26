@@ -405,7 +405,7 @@ export class ModelView {
 
         // Draft context
 
-        //this.element_draft_model_s.appendChild(util.newDiv(null, "model-view-text spacer", ""));
+        this.element_draft_model_s.appendChild(util.newDiv(null, "model-view-text spacer", ""));
 
         this.tb_draft_rope_alpha = new controls.LabelNumbox("model-view-item-left", "RoPE alpha", "model-view-item-textbox shortright", "", this.modelInfo, "draft_rope_alpha", 0.01, 1000, 2, () => { this.send() }, "draft_rope_alpha_auto" );
         this.element_draft_model_s.appendChild(this.tb_draft_rope_alpha.element);
