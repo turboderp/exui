@@ -32,9 +32,11 @@ parser = argparse.ArgumentParser(description="ExUI, chatbot UI for ExLlamaV2")
 parser.add_argument("-host", "--host", type = str, help = "IP:PORT eg, 0.0.0.0:5000", default = "localhost:5000")
 parser.add_argument("-d", "--dir", type = str, help = "Location for user data and sessions, default: ~/exui", default = "~/exui")
 parser.add_argument("-v", "--verbose", action = "store_true", help = "Verbose (debug) mode")
+parser.add_argument("-nb,", "--no_browser", action = "store_true", help = "Don't launch browser on startup")
 args = parser.parse_args()
 
 verbose = args.verbose
+no_browser = args.no_browser
 
 @app.route("/")
 def home():
@@ -449,9 +451,15 @@ load_models()
 
 machine = args.host
 host, port = machine.split(":")
+browser_start = False
 
-if host == "localhost":
+if host == "localhost" and not no_browser:
     Timer(1, lambda: webbrowser.open(f'http://{machine}/')).start()
+    browser_start = True
+
+print(f" -- Starting server on {host} port {port}")
+if browser_start:
+    print(f" -- Opening UI in default web browser")
 
 serve(app, host = host, port = port, threads = 8)
 
