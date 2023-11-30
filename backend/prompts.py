@@ -177,6 +177,35 @@ class PromptFormat_phind_codellama(PromptFormat):
         return text
 
 
+class PromptFormat_deepseekchat(PromptFormat):
+
+    description = "Vicuna/Alpaca-like format for Phind-CodeLlama"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id, "\n\nAssistant:"]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt and system_prompt.strip() != "":
+            text += system_prompt
+            text += "\n\n"
+        text += "User: "
+        text += prompt
+        text += "\n\nAssistant:"
+        if response:
+            text += response
+            text += "\n\n"
+        return text
+
+
 prompt_formats = \
 {
     "Chat-RP": PromptFormat_raw,
@@ -184,7 +213,8 @@ prompt_formats = \
     "ChatML": PromptFormat_chatml,
     "TinyLlama-chat": PromptFormat_tinyllama,
     "MistralLite": PromptFormat_mistrallite,
-    "Phind-CodeLlama": PromptFormat_phind_codellama
+    "Phind-CodeLlama": PromptFormat_phind_codellama,
+    "Deepseek-chat": PromptFormat_deepseekchat,
 }
 
 def list_prompt_formats():
