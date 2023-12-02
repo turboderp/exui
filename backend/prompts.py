@@ -177,9 +177,9 @@ class PromptFormat_phind_codellama(PromptFormat):
         return text
 
 
-class PromptFormat_deepseekchat(PromptFormat):
+class PromptFormat_deepseek_chat(PromptFormat):
 
-    description = "Vicuna/Alpaca-like format for Phind-CodeLlama"
+    description = "Deepseek LLM chat format"
 
     def __init__(self):
         super().__init__()
@@ -206,6 +206,37 @@ class PromptFormat_deepseekchat(PromptFormat):
         return text
 
 
+class PromptFormat_deepseek_instruct(PromptFormat):
+
+    description = "Deepseek instruct format for 'coder' models"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id, "<|EOT|>"]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt and system_prompt.strip() != "":
+            text += "<｜begin▁of▁sentence｜>"
+            text += system_prompt
+            text += "\n"
+        text += "### Instruction:\n"
+        text += prompt
+        text += "\n### Response:\n"
+        if response:
+            text += response
+            text += "\n<|EOT|>\n"
+        return text
+
+
+
 prompt_formats = \
 {
     "Chat-RP": PromptFormat_raw,
@@ -214,7 +245,8 @@ prompt_formats = \
     "TinyLlama-chat": PromptFormat_tinyllama,
     "MistralLite": PromptFormat_mistrallite,
     "Phind-CodeLlama": PromptFormat_phind_codellama,
-    "Deepseek-chat": PromptFormat_deepseekchat,
+    "Deepseek-chat": PromptFormat_deepseek_chat,
+    "Deepseek-instruct": PromptFormat_deepseek_instruct,
 }
 
 def list_prompt_formats():
