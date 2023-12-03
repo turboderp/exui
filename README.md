@@ -45,6 +45,10 @@ Your browser should automatically open on the default IP/port. Config and sessio
 Prebuilt wheels for ExLlamaV2 are available [here](https://github.com/turboderp/exllamav2/releases). Installing 
 the latest version of [Flash Attention](https://github.com/Dao-AILab/flash-attention) is recommended. 
 
+### Installation
+
+More detailed installation instructions can be found [here](https://github.com/turboderp/exui/blob/master/doc/manual-install.md).
+
 ### More to come
 
 Stay tuned.
