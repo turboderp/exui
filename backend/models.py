@@ -208,7 +208,6 @@ class ModelContainer:
         self.config.max_seq_len = model["seq_len"]
         self.config.scale_pos_emb = model["rope_scale"]
         self.config.scale_alpha_value = model["rope_alpha"]
-        self.draft_config.scale_pos_emb = model["rope_scale"]
         self.config.max_input_len = model["chunk_size"]
         self.config.max_attn_size = model["chunk_size"] ** 2
 
@@ -229,6 +228,7 @@ class ModelContainer:
             self.draft_config.max_seq_len = self.config.max_seq_len
 
             self.draft_config.scale_alpha_value = alpha
+            self.draft_config.scale_pos_emb = model["rope_scale"]
             self.draft_config.max_input_len = model["chunk_size"]
             self.draft_config.max_attn_size = model["chunk_size"] ** 2
 
