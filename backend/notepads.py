@@ -103,7 +103,7 @@ def get_default_notepad_settings():
         "mirostat_tau": 1.25,
         "mirostat_eta": 0.1,
         "typical": 0.0,
-        "repp": 1.15,
+        "repp": 1.05,
         "repr": 1024,
         "repd": 512,
         "stop_conditions": [ { "text": "</s>", "inclusive": False } ],
@@ -267,11 +267,18 @@ class Notepad:
         generator.begin_stream(context_ids, gen_settings, token_healing = True)
         generator.set_stop_conditions([])
 
-        # Get one token
+        # Get one token (or at least one UTF-8 character)
 
-        chunk, eos, tokens = generator.stream()
-        t = tokens.item()
-        if t in tokenizer.extended_id_to_piece: chunk += tokenizer.extended_id_to_piece[t]
+        chunk = ""
+        while True:
+            chunk_, eos, tokens = generator.stream()
+            chunk += chunk_
+            if tokens.shape[-1] != 0 or eos: break
+
+        for i in range(tokens.shape[-1]):
+            t = tokens[0, i].item()
+            if t in tokenizer.extended_id_to_piece: chunk += tokenizer.extended_id_to_piece[t]
+
         self.text = context_str + chunk + context_post_str
 
         # Save
