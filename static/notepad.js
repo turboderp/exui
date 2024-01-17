@@ -137,7 +137,7 @@ class NotepadView {
         this.editor.spellcheck = false;
         //this.editor.contentEditable = "true";
         //this.editor.useRichtext = true;
-        this.editor.addEventListener("paste", (event) => { this.paste(event); });
+        //this.editor.addEventListener("paste", (event) => { this.paste(event); });
         this.editor.addEventListener("input", (event) => { this.input(event); });
         this.editor.addEventListener("blur", (event) => { this.blur(event); });
         this.editor.addEventListener("keydown", (event) => { this.keydown(event); });
@@ -253,13 +253,14 @@ class NotepadView {
         }
     }
 
-    paste(event) {
-        event.preventDefault();
-        let text = (event.clipboardData || window.clipboardData).getData('text');
-        document.execCommand("insertText", false, text);
-//        let t = this.getText();
-//        this.setText(t);
-    }
+//    paste(event) {
+//        event.preventDefault();
+//        let text = (event.clipboardData || window.clipboardData).getData('text');
+//        this.editor.insertText(false, text);
+////        console.log("Paste: " + text);
+////        let t = this.getText();
+////        this.setText(t);
+//    }
 
     setText(text) {
         this.editor.value = text;
