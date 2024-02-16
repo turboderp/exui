@@ -121,6 +121,7 @@ def prepare_draft_model(model):
     if model["draft_enabled"]:
 
         prep_draft_config = ExLlamaV2Config()
+        prep_draft_config.fasttensors = False
         prep_draft_config.model_dir = expanduser(model.get("draft_model_directory", ""))
         try:
             prep_draft_config.prepare()
@@ -149,6 +150,7 @@ def prepare_draft_model(model):
 def prepare_model(model):
 
     prep_config = ExLlamaV2Config()
+    prep_config.fasttensors = False
     prep_config.model_dir = expanduser(model["model_directory"])
 
     try:

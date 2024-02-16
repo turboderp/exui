@@ -236,6 +236,39 @@ class PromptFormat_deepseek_instruct(PromptFormat):
         return text
 
 
+class PromptFormat_openchat(PromptFormat):
+
+    description = "OpenChat"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id,
+             "<|end_of_turn|>",
+             "<|endoftext|>",
+             "GPT4 Correct User:"
+             ]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt and system_prompt.strip() != "":
+            text += system_prompt
+            text += "<|end_of_turn|>"
+        text += "GPT4 Correct User:"
+        text += prompt
+        text += "<|end_of_turn|>"
+        text += "GPT4 Correct Assistant:"
+        if response:
+            text += response
+            text += "<|end_of_turn|>"
+        return text
+
 
 prompt_formats = \
 {
@@ -247,6 +280,7 @@ prompt_formats = \
     "Phind-CodeLlama": PromptFormat_phind_codellama,
     "Deepseek-chat": PromptFormat_deepseek_chat,
     "Deepseek-instruct": PromptFormat_deepseek_instruct,
+    "OpenChat": PromptFormat_openchat,
 }
 
 def list_prompt_formats():

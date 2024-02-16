@@ -62,7 +62,7 @@ export class SessionSettings {
 
         // Sampling
 
-        this.sss_i_temperature  = new controls.SettingsSlider("sss-item-left", "Temperature",   "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     0,    3, null,                             this.settings, "temperature",  () => { this.updateView(true); });
+        this.sss_i_temperature  = new controls.SettingsSlider("sss-item-left", "Temperature",   "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     0,    5, null,                             this.settings, "temperature",  () => { this.updateView(true); });
         this.sss_i_topK         = new controls.SettingsSlider("sss-item-left", "Top K",         "sss-item-mid", "sss-item-right sss-item-textbox-r", 0,     0, 1000, { "0": "off" },                   this.settings, "top_k",        () => { this.updateView(true); });
         this.sss_i_topP         = new controls.SettingsSlider("sss-item-left", "Top P",         "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     0,    1, { "0.00": "off", "1.00": "off" }, this.settings, "top_p",        () => { this.updateView(true); });
         this.sss_i_minP         = new controls.SettingsSlider("sss-item-left", "Min P",         "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     0,    1, { "0.00": "off", "1.00": "off" }, this.settings, "min_p",        () => { this.updateView(true); });
