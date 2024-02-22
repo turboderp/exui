@@ -103,9 +103,11 @@ def get_default_notepad_settings():
         "mirostat_tau": 1.25,
         "mirostat_eta": 0.1,
         "typical": 0.0,
-        "repp": 1.05,
+        "repp": 1.01,
         "repr": 1024,
         "repd": 512,
+        "quad_sampling": 0.0,
+        "temperature_last": False,
         "stop_conditions": [ { "text": "</s>", "inclusive": False } ],
     }
 
@@ -207,9 +209,11 @@ class Notepad:
 
         gen_settings = ExLlamaV2Sampler.Settings()
         gen_settings.temperature = self.settings["temperature"]
+        gen_settings.temperature_last = self.settings["temperature_last"]
         gen_settings.top_k = self.settings["top_k"]
         gen_settings.top_p = self.settings["top_p"]
         gen_settings.min_p = self.settings["min_p"]
+        gen_settings.smoothing_factor = self.settings["quad_sampling"]
         gen_settings.tfs = self.settings["tfs"]
         gen_settings.typical = self.settings["typical"]
         gen_settings.mirostat = self.settings["mirostat"]

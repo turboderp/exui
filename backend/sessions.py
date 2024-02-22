@@ -113,6 +113,8 @@ def get_default_session_settings():
         "repp": 1.01,
         "repr": 1024,
         "repd": 512,
+        "quad_sampling": 0.0,
+        "temperature_last": False
     }
 
 class Session:
@@ -368,9 +370,11 @@ class Session:
 
         gen_settings = ExLlamaV2Sampler.Settings()
         gen_settings.temperature = self.settings["temperature"]
+        gen_settings.temperature_last = self.settings["temperature_last"]
         gen_settings.top_k = self.settings["top_k"]
         gen_settings.top_p = self.settings["top_p"]
         gen_settings.min_p = self.settings["min_p"]
+        gen_settings.smoothing_factor = self.settings["quad_sampling"]
         gen_settings.tfs = self.settings["tfs"]
         gen_settings.typical = self.settings["typical"]
         gen_settings.mirostat = self.settings["mirostat"]
