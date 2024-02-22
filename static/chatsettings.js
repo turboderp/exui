@@ -140,6 +140,10 @@ export class SessionSettings {
         this.sss_roles.setVisible(hasRoles);
         this.sss_stopConditions.setVisible(hasRoles);
 
+        let opt = globals.g.promptFormatsOptions[this.settings.prompt_format];
+        let hasSysPrompt = opt.supports_system_prompt;
+        this.sss_systemPrompt.setVisible(hasSysPrompt);
+
         let mirostat = this.settings.mirostat;
         this.sss_i_mirostat_tau.setVisible(mirostat);
         this.sss_i_mirostat_eta.setVisible(mirostat);

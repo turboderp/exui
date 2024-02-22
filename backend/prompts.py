@@ -16,6 +16,10 @@ class PromptFormat:
     def encode_special_tokens(self):
         return True
 
+    @staticmethod
+    def supports_system_prompt():
+        return True
+
 
 class PromptFormat_raw(PromptFormat):
 
@@ -270,6 +274,48 @@ class PromptFormat_openchat(PromptFormat):
         return text
 
 
+
+class PromptFormat_gemma(PromptFormat):
+
+    description = "OpenChat"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id,
+             "<end_of_tur>",
+             ]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt is not None:
+            text += "<bos>"
+            # s = system_prompt.strip()
+            # if s != "":
+            #     text += "<start_of_turn>user\n"
+            #     text += s + "<end_of_turn>\n"
+            #     text += "<start_of_turn>model\n"
+            #     text += "Okay!<end_of_turn>\n"
+        text += "<start_of_turn>user\n"
+        text += prompt
+        text += "<end_of_turn>\n"
+        text += "<start_of_turn>model\n"
+        if response:
+            text += response
+            text += "<end_of_turn>\n"
+        return text
+
+    @staticmethod
+    def supports_system_prompt():
+        return False
+
+
 prompt_formats = \
 {
     "Chat-RP": PromptFormat_raw,
@@ -281,8 +327,16 @@ prompt_formats = \
     "Deepseek-chat": PromptFormat_deepseek_chat,
     "Deepseek-instruct": PromptFormat_deepseek_instruct,
     "OpenChat": PromptFormat_openchat,
+    "Gemma": PromptFormat_gemma,
 }
 
 def list_prompt_formats():
     global prompt_formats
-    return list(prompt_formats.keys())
+    prompts = [
+        {
+            "name": k,
+            "supports_system_prompt": v.supports_system_prompt()
+        }
+        for k, v in prompt_formats.items()
+    ]
+    return prompts
