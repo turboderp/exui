@@ -39,7 +39,7 @@ class PromptFormat_raw(PromptFormat):
         raise NotImplementedError
 
     def encode_special_tokens(self):
-        return False
+        return True
 
 
 class PromptFormat_llama(PromptFormat):
