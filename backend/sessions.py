@@ -110,7 +110,7 @@ def get_default_session_settings():
         "mirostat_tau": 1.25,
         "mirostat_eta": 0.1,
         "typical": 0.0,
-        "repp": 1.05,
+        "repp": 1.01,
         "repr": 1024,
         "repd": 512,
     }
