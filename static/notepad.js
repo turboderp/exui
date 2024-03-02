@@ -134,7 +134,7 @@ class NotepadView {
 
         this.editor = document.createElement("textarea");
         this.editor.className = "notepad-editor";
-        this.editor.spellcheck = false;
+        this.editor.spellcheck = true;
         //this.editor.contentEditable = "true";
         //this.editor.useRichtext = true;
         //this.editor.addEventListener("paste", (event) => { this.paste(event); });
