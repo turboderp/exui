@@ -40,6 +40,7 @@ export class NotepadSettings {
         this.sss_i_quadSampling     = new controls.SettingsSlider("sss-item-left", "Quad. smooth",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     0,    2, { "0.00": "off" },                this.settings, "quad_sampling",() => { this.updateView(true); });
         this.sss_i_tfs              = new controls.SettingsSlider("sss-item-left", "TFS",           "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     0,    1, { "0.00": "off", "1.00": "off" }, this.settings, "tfs",          () => { this.updateView(true); });
         this.sss_i_typical          = new controls.SettingsSlider("sss-item-left", "Typical",       "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     0,    1, { "0.00": "off", "1.00": "off" }, this.settings, "typical",      () => { this.updateView(true); });
+        this.sss_i_skew             = new controls.SettingsSlider("sss-item-left", "Skew",          "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,    -5,    5, { "0.00": "off" },                this.settings, "skew",         () => { this.updateView(true); });
         this.sss_i_repPenalty       = new controls.SettingsSlider("sss-item-left", "Rep. penalty",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 2,     1,    3, { "1.00": "off" },                this.settings, "repp",         () => { this.updateView(true); });
         this.sss_i_repRange         = new controls.SettingsSlider("sss-item-left", "Rep. range",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0,     0, 4096, { "0": "off" },                   this.settings, "repr",         () => { this.updateView(true); });
 
@@ -56,6 +57,7 @@ export class NotepadSettings {
         this.sss_sampling.inner.appendChild(this.sss_i_quadSampling.element);
         this.sss_sampling.inner.appendChild(this.sss_i_tfs.element);
         this.sss_sampling.inner.appendChild(this.sss_i_typical.element);
+        this.sss_sampling.inner.appendChild(this.sss_i_skew.element);
         this.sss_sampling.inner.appendChild(this.sss_i_repPenalty.element);
         this.sss_sampling.inner.appendChild(this.sss_i_repRange.element);
 

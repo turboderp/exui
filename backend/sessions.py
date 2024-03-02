@@ -114,7 +114,8 @@ def get_default_session_settings():
         "repr": 1024,
         "repd": 512,
         "quad_sampling": 0.0,
-        "temperature_last": False
+        "temperature_last": False,
+        "skew": 0.0,
     }
 
 class Session:
@@ -380,6 +381,7 @@ class Session:
         gen_settings.mirostat = self.settings["mirostat"]
         gen_settings.mirostat_tau = self.settings["mirostat_tau"]
         gen_settings.mirostat_eta = self.settings["mirostat_eta"]
+        gen_settings.skew = self.settings["skew"]
         gen_settings.token_repetition_penalty = self.settings["repp"]
         gen_settings.token_repetition_range = self.settings["repr"]
         gen_settings.token_repetition_decay = self.settings["repr"]

@@ -108,6 +108,7 @@ def get_default_notepad_settings():
         "repd": 512,
         "quad_sampling": 0.0,
         "temperature_last": False,
+        "skew": 0.0,
         "stop_conditions": [ { "text": "</s>", "inclusive": False } ],
     }
 
@@ -219,6 +220,7 @@ class Notepad:
         gen_settings.mirostat = self.settings["mirostat"]
         gen_settings.mirostat_tau = self.settings["mirostat_tau"]
         gen_settings.mirostat_eta = self.settings["mirostat_eta"]
+        gen_settings.skew = self.settings["skew"]
         gen_settings.token_repetition_penalty = self.settings["repp"]
         gen_settings.token_repetition_range = self.settings["repr"]
         gen_settings.token_repetition_decay = self.settings["repr"]
