@@ -347,7 +347,7 @@ export class ModelView {
         this.tb_seq_len = new controls.LabelNumbox("model-view-item-left", "Context length", "model-view-item-textbox shortright", "", this.modelInfo, "seq_len", 32, 1024*1024, 0, () => { this.send() } );
         this.tb_rope_scale = new controls.LabelNumbox("model-view-item-left", "RoPE scale", "model-view-item-textbox shortright", "", this.modelInfo, "rope_scale", 0.01, 1000, 2, () => { this.send() } );
         this.tb_rope_alpha = new controls.LabelNumbox("model-view-item-left", "RoPE alpha", "model-view-item-textbox shortright", "", this.modelInfo, "rope_alpha", 0.01, 1000, 2, () => { this.send() } );
-        this.cb_cache_mode = new controls.LabelCombobox("model-view-item-left", "Cache mode", "model-view-item-combobox short", [ "FP16", "FP8" ], this.modelInfo, "cache_mode", () => { this.send() } );
+        this.cb_cache_mode = new controls.LabelCombobox("model-view-item-left", "Cache mode", "model-view-item-combobox short", [ "FP16", "FP8", "Q4" ], this.modelInfo, "cache_mode", () => { this.send() } );
         this.tb_chunk_size = new controls.LabelNumbox("model-view-item-left", "Chunk size", "model-view-item-textbox shortright", "", this.modelInfo, "chunk_size", 32, 1024*1024, 0, () => { this.send() } );
         this.tb_gpu_split = new controls.LabelTextbox("model-view-item-left", "GPU split", "model-view-item-textbox short", "8.5,12", this.modelInfo, "gpu_split", null, () => { this.send() }, "gpu_split_auto" );
 

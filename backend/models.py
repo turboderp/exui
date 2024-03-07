@@ -7,6 +7,7 @@ from exllamav2 import(
     ExLlamaV2Config,
     ExLlamaV2Cache,
     ExLlamaV2Cache_8bit,
+    ExLlamaV2Cache_Q4,
     ExLlamaV2Tokenizer,
 )
 
@@ -196,7 +197,6 @@ class ModelContainer:
     generator: ExLlamaV2StreamingGenerator or None = None
     model_dict = None
 
-    cache_fp8: bool = False
     draft_enabled: bool = False
 
     def __init__(self, model, progress_callback = None):
@@ -240,10 +240,6 @@ class ModelContainer:
 
     def load(self, progress_callback = None):
 
-        if self.model_dict["cache_mode"] == "FP8": self.cache_fp8 = True
-        elif self.model_dict["cache_mode"] == "FP16": self.cache_fp8 = False
-        else: raise ValueError("bad cache_mode: " + self.model_dict["cache_mode"])
-
         self.tokenizer = ExLlamaV2Tokenizer(self.config)
 
         # Load draft model
@@ -281,10 +277,14 @@ class ModelContainer:
                 if isinstance(value, str):
                     yield value
 
-        if self.cache_fp8:
-            self.cache = ExLlamaV2Cache_8bit(self.model, lazy = auto_split)
-        else:
+        if self.model_dict["cache_mode"] == "FP16":
             self.cache = ExLlamaV2Cache(self.model, lazy = auto_split)
+        elif self.model_dict["cache_mode"] == "FP8":
+            self.cache = ExLlamaV2Cache_8bit(self.model, lazy = auto_split)
+        elif self.model_dict["cache_mode"] == "Q4":
+            self.cache = ExLlamaV2Cache_Q4(self.model, lazy = auto_split)
+        else:
+            raise ValueError("Unknown cache mode: " + self.model_dict["cache_mode"])
 
         if auto_split:
             reserve = [96 * 1024**2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
