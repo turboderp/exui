@@ -16,7 +16,7 @@ renderer.code = function(code, infostring, escaped) {
     return `
         <div class="code-block">
             <pre><code>${code}</code></pre>
-            <button id="${uniqueId}" data-clipboard-text="${escape(code)}" class="copy-btn">⎘ Copy</button>
+            <button id="${uniqueId}" data-clipboard-text="${escape(code)}" class="copy-btn">🗎 Copy</button>
         </div>
     `;
 };
@@ -67,7 +67,7 @@ export class Chat {
             if (event.target && event.target.classList.contains('code-block')) {
                 const button = event.target.querySelector('.copy-btn');
                 if (button) {
-                    button.textContent = '⎘ Copy'; // Revert button text to "Copy"
+                    button.textContent = '🗎 Copy'; // Revert button text to "Copy"
                     button.classList.remove("clicked");
                 }
             }

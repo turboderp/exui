@@ -466,14 +466,15 @@
     right: 10px;
     padding-left: 10px;
     padding-right: 10px;
-    padding-top: 2px;
-    padding-bottom: 4px;
-    height: 40px;
+    padding-top: 4px;
+    padding-bottom: 0px;
+    height: 30px;
     display: none;
     cursor: pointer;
 }
 
 .copy-btn.clicked {
+    padding-top: 0px;
     background-color: var(--button-disabled-background);
     border: 1px solid var(--button-disabled-border);
 }
