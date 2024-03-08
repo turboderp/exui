@@ -448,3 +448,45 @@
     cursor: pointer;
 }
 
+.code-block {
+    position: relative;
+}
+
+.code-block pre {
+}
+
+.copy-btn {
+    background-color: var(--button-background);
+    font-size: var(--font-size-small);
+    border-radius: 5px;
+    border: 1px solid var(--button-border);
+    color: var(--button-textcolor);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 4px;
+    height: 40px;
+    display: none;
+    cursor: pointer;
+}
+
+.copy-btn.clicked {
+    background-color: var(--button-disabled-background);
+    border: 1px solid var(--button-disabled-border);
+}
+
+.copy-btn.clicked:hover {
+    cursor: unset;
+    filter: unset;
+}
+
+.copy-btn:hover {
+    filter: brightness(var(--hover-brightness));
+    cursor: pointer;
+}
+.code-block:hover .copy-btn {
+    display: block;
+}

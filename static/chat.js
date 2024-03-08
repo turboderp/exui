@@ -7,6 +7,22 @@ import * as overlay from "./overlay.js";
 import * as chatsettings from "./chatsettings.js";
 import * as roles from "./roles.js";
 
+// Copy button for code blocks
+
+const renderer = new marked.Renderer();
+
+renderer.code = function(code, infostring, escaped) {
+    const uniqueId = `copy-${Math.random().toString(16).slice(2)}`;
+    return `
+        <div class="code-block">
+            <pre><code>${code}</code></pre>
+            <button id="${uniqueId}" data-clipboard-text="${escape(code)}" class="copy-btn">⎘ Copy</button>
+        </div>
+    `;
+};
+
+marked.setOptions({ renderer });
+
 export class Chat {
     constructor() {
         this.page = util.newDiv(null, "models");
@@ -31,6 +47,32 @@ export class Chat {
         this.items = new Map();
         this.labels = new Map();
         this.currentView = null;
+
+        // Handle copy button in any dynamically added child elements
+
+        layout.addEventListener('click', function(event) {
+            if (event.target && event.target.classList.contains('copy-btn')) {
+                const text = unescape(event.target.getAttribute('data-clipboard-text'));
+                navigator.clipboard.writeText(text).then(() => {
+                    event.target.classList.add("clicked");
+                    event.target.textContent = '✓ Copied';
+                    console.log('Text copied to clipboard');
+                }).catch(err => {
+                    console.error('Error in copying text: ', err);
+                });
+            }
+        });
+
+        layout.addEventListener('mouseleave', function(event) {
+            if (event.target && event.target.classList.contains('code-block')) {
+                const button = event.target.querySelector('.copy-btn');
+                if (button) {
+                    button.textContent = '⎘ Copy'; // Revert button text to "Copy"
+                    button.classList.remove("clicked");
+                }
+            }
+        }, true);
+
     }
 
     onEnter(getResponse = false) {
