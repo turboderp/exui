@@ -350,6 +350,7 @@ class Session:
         generator = get_loaded_model().generator
         tokenizer = get_loaded_model().tokenizer
         cache = get_loaded_model().cache
+        speculative_mode = get_loaded_model().speculative_mode
 
         prompt_format = prompt_formats[self.settings["prompt_format"]]()
 
@@ -408,6 +409,9 @@ class Session:
                         stop.add("\n" + r.lower() + ":")
                         stop.add("\n " + r.lower() + ":")
                 generator.set_stop_conditions(list(stop) + [tokenizer.eos_token_id])
+
+        if speculative_mode == "N-gram":
+            generator.speculative_ngram = True
 
         # Begin response
 

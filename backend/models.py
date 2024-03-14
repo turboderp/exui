@@ -67,8 +67,12 @@ def get_model_info(data = None):
 
     i = data["model_uuid"]
     if i is None: return None
-    return models[i]
-
+    m = models[i]
+    if m.get("draft_enabled", False):
+        m["draft_enabled"] = False
+        m["speculative_mode"] = "Draft model"
+    if "speculative_mode" not in m: m["speculative_mode"] = "None"
+    return m
 
 # Remove model config
 
@@ -118,8 +122,10 @@ def update_model(data):
 
 def prepare_draft_model(model):
 
-    if "draft_enabled" not in model: model["draft_enabled"] = False
-    if model["draft_enabled"]:
+    if "speculative_mode" not in model:
+        model["speculative_mode"] = "None"
+
+    if model["speculative_mode"] == "Draft model":
 
         prep_draft_config = ExLlamaV2Config()
         prep_draft_config.fasttensors = False
@@ -197,7 +203,7 @@ class ModelContainer:
     generator: ExLlamaV2StreamingGenerator or None = None
     model_dict = None
 
-    draft_enabled: bool = False
+    # draft_enabled: bool = False
 
     def __init__(self, model, progress_callback = None):
 
@@ -213,9 +219,13 @@ class ModelContainer:
         self.config.max_input_len = model["chunk_size"]
         self.config.max_attn_size = model["chunk_size"] ** 2
 
-        self.draft_enabled = self.model_dict["draft_enabled"] if "draft_enabled" in self.model_dict else False
+        if self.model_dict.get("draft_enabled", False):
+            self.model_dict["draft_enabled"] = False
+            self.model_dict["speculative_mode"] = "Draft model"
 
-        if self.draft_enabled:
+        self.speculative_mode = self.model_dict.get("speculative_mode", "None")
+
+        if self.speculative_mode == "Draft model":
 
             self.draft_config = ExLlamaV2Config()
             self.draft_config.model_dir = expanduser(model["draft_model_directory"])
@@ -244,7 +254,7 @@ class ModelContainer:
 
         # Load draft model
 
-        if self.draft_enabled:
+        if self.speculative_mode == "Draft model":
 
             self.draft_model = ExLlamaV2(self.draft_config)
             print("Loading draft model: " + self.draft_config.model_dir)
