@@ -251,6 +251,11 @@ class ModelContainer:
 
     def load(self, progress_callback = None):
 
+        ExLlamaV2Tokenizer.unspecial_piece_to_id = {}  # TODO: won't be necessary from exllamav2 0.0.17
+        ExLlamaV2Tokenizer.unspecial_id_to_piece = {}
+        ExLlamaV2Tokenizer.extended_id_to_piece = {}
+        ExLlamaV2Tokenizer.extended_piece_to_id = {}
+
         self.tokenizer = ExLlamaV2Tokenizer(self.config)
 
         # Load draft model
