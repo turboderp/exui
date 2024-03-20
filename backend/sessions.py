@@ -20,16 +20,17 @@ from backend.config import set_config_dir, global_state, config_filename
 from backend.models import get_loaded_model
 from backend.prompts import prompt_formats
 from backend.util import MultiTimer
+import threading
 
 session_list: dict or None = None
 current_session = None
 
 # Cancel
 
-cancel_signal = False
+abort_event = threading.Event()
 def set_cancel_signal():
-    global cancel_signal
-    cancel_signal = True
+    global abort_event
+    abort_event.set()
 
 
 # List models
@@ -337,8 +338,9 @@ class Session:
 
 
     def generate(self, data):
-        global cancel_signal
+        global abort_event
 
+        abort_event.clear()
         mt = MultiTimer()
 
         if get_loaded_model() is None:
@@ -442,7 +444,13 @@ class Session:
             gen_settings.filters = [ExLlamaV2SelectFilter(model, tokenizer, bot_roles, case_insensitive = False)]
 
             mt.set_stage("prompt")
-            generator.begin_stream(context_ids, gen_settings, token_healing = False)
+            generator.begin_stream(context_ids, gen_settings, token_healing = False, abort_event = abort_event)
+            if abort_event.is_set():
+                abort_event.clear()
+                packet = { "result": "cancel_pre" }
+                yield json.dumps(packet) + "\n"
+                return packet
+
             mt.stop()
 
             mt.set_stage("gen")
@@ -468,13 +476,8 @@ class Session:
 
         # Stream response
 
-        cancel_signal = False
-
         mt.set_stage("gen")
         while True:
-
-            if cancel_signal:
-                break
 
             if chunk_tokens == 0:
 
@@ -489,11 +492,16 @@ class Session:
                 context_ids = torch.cat((context_ids, save_tokens), dim = -1)
 
                 mt.set_stage("prompt")
-                generator.begin_stream(context_ids, gen_settings, token_healing = False)
+                generator.begin_stream(context_ids, gen_settings, token_healing = False, abort_event = abort_event)
+                if abort_event.is_set():
+                    break
+
                 chunk_tokens = model.config.max_seq_len - context_ids.shape[-1] - 1
                 mt.set_stage("gen")
 
             chunk, eos, tokens = generator.stream()
+            if abort_event.is_set(): break
+
             save_tokens = torch.cat((save_tokens, tokens), dim = -1)
 
             generated_tokens += 1
@@ -527,7 +535,7 @@ class Session:
         meta["gen_tokens"] = generated_tokens
         meta["gen_speed"] = generated_tokens / (mt.stages["gen"] + 1e-8)
         meta["overflow"] = max_new_tokens if generated_tokens == max_new_tokens else 0
-        meta["canceled"] = cancel_signal
+        meta["canceled"] = abort_event.is_set()
         new_block["meta"] = meta
 
         # Save response block

@@ -384,7 +384,7 @@ class SessionView {
             let id = setTimeout(() => {
                 clearTimeout(id);
                 reject('No response from server')
-            }, 10000)
+            }, 180000)
         });
 
         let fetchRequest = fetch("/api/generate", {
@@ -463,6 +463,10 @@ class SessionView {
 
         if (response.result == "ok") {
             this.currentStreamingBlock.set(response.new_block);
+        }
+
+        if (response.result == "cancel_pre") {
+
         }
 
         if (this.stickyScroll) this.scrollToBottom();

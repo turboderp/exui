@@ -518,7 +518,7 @@ class NotepadView {
             let id = setTimeout(() => {
                 clearTimeout(id);
                 reject('No response from server')
-            }, 10000)
+            }, 180000)
         });
 
         let fetchRequest = fetch("/api/notepad_generate", {
