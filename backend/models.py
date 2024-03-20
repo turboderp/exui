@@ -218,6 +218,7 @@ class ModelContainer:
         self.config.scale_alpha_value = model["rope_alpha"]
         self.config.max_input_len = model["chunk_size"]
         self.config.max_attn_size = model["chunk_size"] ** 2
+        self.config.max_output_len = 16
 
         if self.model_dict.get("draft_enabled", False):
             self.model_dict["draft_enabled"] = False
