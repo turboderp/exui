@@ -565,7 +565,7 @@ class Session:
 
     def delete_block(self, block_uuid):
 
-        print(f"Deleting block: {block_uuid}")
+        # print(f"Deleting block: {block_uuid}")
 
         for h in self.history:
             if h["block_uuid"] == block_uuid:
@@ -577,7 +577,7 @@ class Session:
     def edit_block(self, block):
 
         block_uuid = block['block_uuid']
-        print(f"Editing block: {block_uuid}")
+        # print(f"Editing block: {block_uuid}")
 
         for i in range(len(self.history)):
             if self.history[i]["block_uuid"] == block_uuid:
