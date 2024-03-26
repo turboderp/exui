@@ -20,6 +20,11 @@ function escapeHTML(html) {
         .replace(/'/g, "&#039;");
 }
 
+function escapeBlock(text) {
+    return text
+        .replace(/([\\`*_{}[\]()#+\-.!>])/g, '\\$1');
+}
+
 renderer.code = function(code, infostring, escaped) {
     const uniqueId = `copy-${Math.random().toString(16).slice(2)}`;
     let escapedCode = escapeHTML(code);
@@ -581,7 +586,10 @@ class ChatBlock {
 
         let html = "";
         if (name) html += "<div class='name' style='color: " + col + "'>" + name + "</div>"
-        html += marked.parse(text);
+        if (this.block.author == "user")
+            html += marked.parse(escapeBlock(escapeHTML(text)));
+        else
+            html += marked.parse(text);
 
         this.textBlock.innerHTML = html;
     }
