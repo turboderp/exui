@@ -197,3 +197,15 @@ export function escape(str) {
 //        .replace(/"/g, '\\"')
 //        .replace(/'/g, "\\'");
 }
+
+export function saveStringDialog(textString) {
+    const textBlob = new Blob([textString], { type: 'text/plain' });
+    const textUrl = URL.createObjectURL(textBlob);
+    const downloadLink = document.createElement("a");
+    downloadLink.download = "codeblock.txt";
+    downloadLink.href = textUrl;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(textUrl);
+}

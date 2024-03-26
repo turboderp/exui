@@ -31,7 +31,8 @@ renderer.code = function(code, infostring, escaped) {
     return `
         <div class="code-block">
             <pre><code>${escapedCode}</code></pre>
-            <button id="${uniqueId}" data-clipboard-text="${escape(code)}" class="copy-btn">🗎 Copy</button>
+            <button id="save-${uniqueId}" data-text="${escape(code)}" class="save-btn">🖫 Save...</button>
+            <button id="copy-${uniqueId}" data-clipboard-text="${escape(code)}" class="copy-btn">🗎 Copy</button>
         </div>
     `;
 };
@@ -63,7 +64,7 @@ export class Chat {
         this.labels = new Map();
         this.currentView = null;
 
-        // Handle copy button in any dynamically added child elements
+        // Handle copy and save buttons in any dynamically added child elements
 
         layout.addEventListener('click', function(event) {
             if (event.target && event.target.classList.contains('copy-btn')) {
@@ -76,13 +77,23 @@ export class Chat {
                     console.error('Error in copying text: ', err);
                 });
             }
+
+            if (event.target && event.target.classList.contains('save-btn')) {
+                const text = unescape(event.target.getAttribute('data-text'));
+                util.saveStringDialog(text);
+            }
         });
 
         layout.addEventListener('mouseleave', function(event) {
             if (event.target && event.target.classList.contains('code-block')) {
-                const button = event.target.querySelector('.copy-btn');
+                let button = event.target.querySelector('.copy-btn');
                 if (button) {
                     button.textContent = '🗎 Copy'; // Revert button text to "Copy"
+                    button.classList.remove("clicked");
+                }
+                button = event.target.querySelector('.save-btn');
+                if (button) {
+                    button.textContent = '🖫 Save...'; // Revert button text to "Copy"
                     button.classList.remove("clicked");
                 }
             }

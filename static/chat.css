@@ -491,3 +491,41 @@
 .code-block:hover .copy-btn {
     display: block;
 }
+
+
+.save-btn {
+    background-color: var(--button-background);
+    font-size: var(--font-size-small);
+    border-radius: 5px;
+    border: 1px solid var(--button-border);
+    color: var(--button-textcolor);
+    position: absolute;
+    top: 10px;
+    right: 82px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 0px;
+    height: 30px;
+    display: none;
+    cursor: pointer;
+}
+
+.save-btn.clicked {
+    padding-top: 0px;
+    background-color: var(--button-disabled-background);
+    border: 1px solid var(--button-disabled-border);
+}
+
+.save-btn.clicked:hover {
+    cursor: unset;
+    filter: unset;
+}
+
+.save-btn:hover {
+    filter: brightness(var(--hover-brightness));
+    cursor: pointer;
+}
+.code-block:hover .save-btn {
+    display: block;
+}
