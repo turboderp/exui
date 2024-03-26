@@ -11,11 +11,21 @@ import * as roles from "./roles.js";
 
 const renderer = new marked.Renderer();
 
+function escapeHTML(html) {
+    return html
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 renderer.code = function(code, infostring, escaped) {
     const uniqueId = `copy-${Math.random().toString(16).slice(2)}`;
+    let escapedCode = escapeHTML(code);
     return `
         <div class="code-block">
-            <pre><code>${code}</code></pre>
+            <pre><code>${escapedCode}</code></pre>
             <button id="${uniqueId}" data-clipboard-text="${escape(code)}" class="copy-btn">🗎 Copy</button>
         </div>
     `;
