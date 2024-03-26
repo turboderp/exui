@@ -289,7 +289,7 @@ class PromptFormat_gemma(PromptFormat):
     def stop_conditions(self, tokenizer, settings):
         return \
             [tokenizer.eos_token_id,
-             "<end_of_tur>",
+             "<end_of_turn>",
              ]
 
     def format(self, prompt, response, system_prompt, settings):
