@@ -76,7 +76,7 @@ def new_session():
     global current_session, session_list
     current_session = Session()
     current_session.init_new()
-    print(f"Created session {current_session.session_uuid}")
+    # print(f"Created session {current_session.session_uuid}")
     filename = current_session.save()
     session_list[current_session.session_uuid] = (current_session.name, filename)
     return current_session.to_json()
@@ -123,14 +123,16 @@ class Session:
 
     name: str = None
     session_uuid: str = None
-    history: [] = None
-    settings: {} = None
+    history: []
+    settings: {}
     # mode: str
 
     history_first = 0
 
     def __init__(self, session_uuid = None):
         self.session_uuid = session_uuid
+        self.history = []
+        self.settings = {}
 
 
     def filename(self):
@@ -199,23 +201,34 @@ class Session:
         return new_block
 
 
-    def create_context(self, prompt_format, max_len, min_len, prefix = ""):
+    def create_context(self, prompt_format, max_len, min_len, uptoblock = None, prefix = ""):
 
         if prompt_format.is_instruct():
-            return self.create_context_instruct(prompt_format, max_len, min_len, prefix)
+            return self.create_context_instruct(prompt_format, max_len, min_len, uptoblock, prefix)
         else:
-            return self.create_context_raw(prompt_format, max_len, min_len, prefix)
+            return self.create_context_raw(prompt_format, max_len, min_len, uptoblock, prefix)
 
 
-    def create_context_instruct(self, prompt_format, max_len, min_len, prefix = ""):
+    def create_context_instruct(self, prompt_format, max_len, min_len, uptoblock = None, prefix = ""):
 
         tokenizer = get_loaded_model().tokenizer
         prompts = []
         responses = []
 
+        # Prepare prefix
+
+        prefix_ids = None
+        prefix_len = 0
+        if prefix:
+            prefix_ids = tokenizer.encode(prefix, encode_special_tokens = prompt_format.encode_special_tokens())
+            # prefix = tokenizer.decode(prefix_ids, decode_special_tokens = prompt_format.encode_special_tokens())
+            prefix_len = prefix_ids.shape[-1]
+
         # Create prompt-response pairs, pad in case of multiple prompts or responses in a row
 
         for h in self.history:
+
+            if h["block_uuid"] == uptoblock: break
 
             if h["author"] == "assistant":
                 if len(prompts) == len(responses): prompts.append("")
@@ -250,7 +263,7 @@ class Session:
 
         # Advance or roll back history
 
-        current_length = system_length + sum(lengths[self.history_first:])
+        current_length = system_length + sum(lengths[self.history_first:]) + prefix_len
 
         if current_length > max_len:
             target_max = min_len
@@ -276,15 +289,24 @@ class Session:
         context_str = "".join(pairs[self.history_first:])
         context_ids = torch.cat(tokenized_pairs[self.history_first:], dim = -1)
 
+        # Add prefix
+
+        if prefix_ids is not None:
+            context_str += " " + prefix
+            context_ids = torch.cat([context_ids, prefix_ids], dim = -1)
+
         # print("self.history_first", self.history_first)
         # print("context_ids.shape[-1]", context_ids.shape[-1])
         return context_str, context_ids
 
 
-    def create_context_raw(self, prompt_format, max_len, min_len, prefix=""):
+    def create_context_raw(self, prompt_format, max_len, min_len, uptoblock = None, prefix=""):
 
         tokenizer = get_loaded_model().tokenizer
-        history_copy = [h["text"] for h in self.history]
+        history_copy = []
+        for h in self.history:
+            if h["block_uuid"] == uptoblock: break
+            history_copy.append(h["text"] or "")
 
         # Get length of system prompt
 
@@ -343,6 +365,9 @@ class Session:
         abort_event.clear()
         mt = MultiTimer()
 
+        gen_prefix = data.get("prefix", "")
+        block_id = data.get("block_id", None)
+
         if get_loaded_model() is None:
             packet = { "result": "fail", "error": "No model loaded." }
             yield json.dumps(packet) + "\n"
@@ -358,7 +383,17 @@ class Session:
 
         # Create response block
 
-        if prompt_format.is_instruct():
+        new_block = None
+
+        if block_id is not None:
+
+            for b in self.history:
+                if b["block_uuid"] == block_id:
+                    new_block = b
+                    break
+            new_block["text"] = ""
+
+        elif prompt_format.is_instruct():
 
             new_block = {}
             new_block["block_uuid"] = str(uuid.uuid4())
@@ -422,7 +457,7 @@ class Session:
         chunk_tokens = 0
 
         last_chunk_time = time.time()
-        full_response = ""  # TODO: Preload response
+        full_response = ""  # gen_prefix
         save_tokens = torch.empty((1, 0), dtype = torch.long)
         chunk_buffer = ""
 
@@ -430,49 +465,91 @@ class Session:
 
         # If not in instruct mode, generate bot name prefix
 
-        prefix = ""
+        healing = False
         if not prompt_format.is_instruct():
 
+            prefix = ""
             bot_roles = []
             for r in self.settings["roles"][1:]:
                 if r.strip() != "": bot_roles.append(r + ":")
             assert len(bot_roles) >= 1
 
-            past_tokens = model.config.max_seq_len - chunk_size - save_tokens.shape[-1]
-            past_tokens_min = model.config.max_seq_len - 2 * chunk_size - save_tokens.shape[-1]
-            context_str, context_ids = self.create_context(prompt_format, past_tokens, past_tokens_min)
-            gen_settings.filters = [ExLlamaV2SelectFilter(model, tokenizer, bot_roles, case_insensitive = False)]
+            # Get bot role from prefix
 
-            mt.set_stage("prompt")
-            generator.begin_stream(context_ids, gen_settings, token_healing = False, abort_event = abort_event)
-            if abort_event.is_set():
-                abort_event.clear()
-                packet = { "result": "cancel_pre" }
-                yield json.dumps(packet) + "\n"
-                return packet
+            skip_select = False
+            p_healing = False
+            if gen_prefix:
+                skip_select = True
+                nbr = []
+                for br in bot_roles:
+                    if len(gen_prefix) < len(br) and br.startswith(gen_prefix):
+                        nbr.append(br[len(gen_prefix):])
+                if len(nbr) >= 1:
+                    bot_roles = nbr
+                    skip_select = False
+                    p_healing = True
+                    prefix = gen_prefix
 
-            mt.stop()
+            # Generate bot role
 
-            mt.set_stage("gen")
-            while True:
-                chunk, eos, tokens = generator.stream()
-                prefix += chunk
-                if eos: break
-            mt.stop()
+            if not skip_select:
 
-            gen_settings.filters = []
+                past_tokens = model.config.max_seq_len - chunk_size - save_tokens.shape[-1]
+                past_tokens_min = model.config.max_seq_len - 2 * chunk_size - save_tokens.shape[-1]
+                context_str, context_ids = self.create_context(prompt_format, past_tokens, past_tokens_min, uptoblock = block_id)
+                sfilter = ExLlamaV2SelectFilter(model, tokenizer, bot_roles, case_insensitive = False)
+                gen_settings.filters = [sfilter]
+
+                mt.set_stage("prompt")
+                generator.begin_stream(context_ids,
+                                       gen_settings,
+                                       token_healing = p_healing,
+                                       abort_event = abort_event)
+                if abort_event.is_set():
+                    abort_event.clear()
+                    packet = { "result": "cancel_pre" }
+                    yield json.dumps(packet) + "\n"
+                    return packet
+
+                mt.stop()
+
+                mt.set_stage("gen")
+                while True:
+                    chunk, eos, tokens = generator.stream()
+                    prefix += chunk
+                    if eos: break
+                mt.stop()
+
+                gen_settings.filters = []
+                gen_prefix = prefix
+
+            else:
+
+                prefix = gen_prefix
+                healing = True
 
             # Begin block with bot name prefix
 
-            new_block = {}
-            new_block["block_uuid"] = str(uuid.uuid4())
-            new_block["author"] = "assistant"
-            new_block["text"] = prefix
+            if not new_block:
 
-            packet = {}
-            packet["result"] = "begin_block"
-            packet["block"] = new_block
-            yield json.dumps(packet) + "\n"
+                new_block = {}
+                new_block["block_uuid"] = str(uuid.uuid4())
+                new_block["author"] = "assistant"
+                new_block["text"] = prefix
+
+                packet = {}
+                packet["result"] = "begin_block"
+                packet["block"] = new_block
+                yield json.dumps(packet) + "\n"
+
+            else:
+
+                new_block["text"] = prefix
+
+        else:
+
+            prefix = gen_prefix
+            if gen_prefix: healing = True
 
         # Stream response
 
@@ -488,14 +565,16 @@ class Session:
 
                 past_tokens = model.config.max_seq_len - chunk_size - save_tokens.shape[-1]
                 past_tokens_min = model.config.max_seq_len - 2 * chunk_size - save_tokens.shape[-1]
-                context_str, context_ids = self.create_context(prompt_format, past_tokens, past_tokens_min, prefix)
+                context_str, context_ids = self.create_context(prompt_format, past_tokens, past_tokens_min, prefix = prefix, uptoblock = block_id)
                 context_ids = torch.cat((context_ids, save_tokens), dim = -1)
 
                 mt.set_stage("prompt")
-                generator.begin_stream(context_ids, gen_settings, token_healing = False, abort_event = abort_event)
+                generator.begin_stream(context_ids, gen_settings, token_healing = healing, abort_event = abort_event)
                 if abort_event.is_set():
                     break
 
+                prefix = ""
+                healing = False
                 chunk_tokens = model.config.max_seq_len - context_ids.shape[-1] - 1
                 mt.set_stage("gen")
 
@@ -540,8 +619,12 @@ class Session:
 
         # Save response block
 
-        new_block["text"] = prefix + full_response.rstrip()
-        self.history.append(new_block)
+        if gen_prefix:
+            new_block["text"] = gen_prefix + prefix + full_response.rstrip()
+        else:
+            new_block["text"] = prefix + full_response.rstrip()
+        if not block_id:
+            self.history.append(new_block)
         self.save()
 
         # Done
@@ -563,14 +646,23 @@ class Session:
         self.save()
 
 
-    def delete_block(self, block_uuid):
+    def delete_block(self, block_uuid, delete_from_here):
 
         # print(f"Deleting block: {block_uuid}")
 
-        for h in self.history:
-            if h["block_uuid"] == block_uuid:
+        if delete_from_here:
+            deleting = False
+            todelete = []
+            for h in self.history:
+                if h["block_uuid"] == block_uuid or deleting:
+                    todelete.append(h)
+                    deleting = True
+            for h in todelete:
                 self.history.remove(h)
-                break
+        else:
+            for h in self.history:
+                if h["block_uuid"] == block_uuid:
+                    self.history.remove(h)
         self.save()
 
 

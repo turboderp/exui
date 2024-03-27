@@ -214,7 +214,7 @@ def api_delete_block():
         s = get_session()
         data = request.get_json()
         if verbose: print("<-", data)
-        s.delete_block(data["block_uuid"])
+        s.delete_block(data["block_uuid"], data["delete_from_here"])
         result = { "result": "ok" }
         if verbose: print("->", result)
         return json.dumps(result) + "\n"
