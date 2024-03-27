@@ -244,7 +244,11 @@ class SessionView {
         div.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                this.submitInput();
+                if (event.ctrlKey) {
+                    this.regenerateLastAssistant();
+                } else {
+                    this.submitInput();
+                }
             }
         });
         div.addEventListener('input', () => { this.inputFieldAutogrow(); });
@@ -365,6 +369,15 @@ class SessionView {
                 if (globals.g.loadedModelUUID) this.getModelResponse();
             }
         }
+    }
+
+    regenerateLastAssistant() {
+        let lastblock = null;
+        for (const b of this.items)
+            if (b[1].block.author == "assistant")
+                lastblock = b[1];
+        if (lastblock)
+            lastblock.regenerateBlock(lastblock);
     }
 
     disableInput() {
