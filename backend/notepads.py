@@ -74,7 +74,7 @@ def new_notepad():
     global current_notepad, notepad_list
     current_notepad = Notepad()
     current_notepad.init_new()
-    print(f"Created notepad {current_notepad.notepad_uuid}")
+    # print(f"Created notepad {current_notepad.notepad_uuid}")
     filename = current_notepad.save()
     notepad_list[current_notepad.notepad_uuid] = (current_notepad.name, filename)
     return current_notepad.to_json()
@@ -202,7 +202,8 @@ class Notepad:
         for token in tokens:
             t = {}
             t["id"] = token
-            t["piece"] = m.tokenizer.extended_id_to_piece.get(token, id_to_piece[token])
+            ext_piece = m.tokenizer.extended_id_to_piece.get(token)
+            t["piece"] = ext_piece if ext_piece else id_to_piece[token]
             tokenized.append(t)
         return tokenized
 
