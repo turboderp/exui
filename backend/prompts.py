@@ -274,7 +274,6 @@ class PromptFormat_openchat(PromptFormat):
         return text
 
 
-
 class PromptFormat_gemma(PromptFormat):
 
     description = "OpenChat"
@@ -316,6 +315,40 @@ class PromptFormat_gemma(PromptFormat):
         return False
 
 
+class PromptFormat_cohere(PromptFormat):
+
+    description = "Cohere"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id,
+             "<|END_OF_TURN_TOKEN|>",
+             ]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt is not None:
+            text += "<BOS_TOKEN>"
+            text += "<|START_OF_TURN_TOKEN|><|SYSTEM_TOKEN|>"
+            text += system_prompt.strip()
+            text += "<|END_OF_TURN_TOKEN|>"
+        text += "<|START_OF_TURN_TOKEN|><|USER_TOKEN|>"
+        text += prompt
+        text += "<|END_OF_TURN_TOKEN|>"
+        text += "<|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>"
+        if response:
+            text += response
+            text += "<|END_OF_TURN_TOKEN|>"
+        return text
+
+
 prompt_formats = \
 {
     "Chat-RP": PromptFormat_raw,
@@ -328,6 +361,7 @@ prompt_formats = \
     "Deepseek-instruct": PromptFormat_deepseek_instruct,
     "OpenChat": PromptFormat_openchat,
     "Gemma": PromptFormat_gemma,
+    "Cohere": PromptFormat_cohere,
 }
 
 def list_prompt_formats():
