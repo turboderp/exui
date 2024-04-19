@@ -215,6 +215,11 @@ class Session:
         prompts = []
         responses = []
 
+        # Make room for one-off BOS token
+
+        if prompt_format.context_bos():
+            max_len -= 1
+
         # Prepare prefix
 
         prefix_ids = None
@@ -295,8 +300,15 @@ class Session:
             context_str += " " + prefix
             context_ids = torch.cat([context_ids, prefix_ids], dim = -1)
 
+        # Add context BOS
+
+        if prompt_format.context_bos():
+            context_str = tokenizer.bos_token + context_str
+            context_ids = torch.cat([tokenizer.single_token(tokenizer.bos_token_id), context_ids], dim = -1)
+
         # print("self.history_first", self.history_first)
         # print("context_ids.shape[-1]", context_ids.shape[-1])
+
         return context_str, context_ids
 
 

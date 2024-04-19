@@ -16,6 +16,9 @@ class PromptFormat:
     def encode_special_tokens(self):
         return True
 
+    def context_bos(self):
+        return False
+
     @staticmethod
     def supports_system_prompt():
         return True
@@ -69,6 +72,42 @@ class PromptFormat_llama(PromptFormat):
             text += response
             text += "</s>"
         return text
+
+
+class PromptFormat_llama3(PromptFormat):
+
+    description = "Llama-3 instruct template.chat"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.single_id("<|eot_id|>"),
+             tokenizer.single_id("<|start_header_id|>"),
+             tokenizer.eos_token_id]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt and system_prompt.strip() != "":
+            text += "<|start_header_id|>system<|end_header_id|>\n\n"
+            text += system_prompt
+            text += "<|eot_id|>"
+        text += "<|start_header_id|>user<|end_header_id|>\n\n"
+        text += prompt
+        text += "<|eot_id|>"
+        text += "<|start_header_id|>assistant<|end_header_id|>\n\n"
+        if response:
+            text += response
+            text += "<|eot_id|>"
+        return text
+
+    def context_bos(self):
+        return True
 
 
 class PromptFormat_mistrallite(PromptFormat):
@@ -353,6 +392,7 @@ prompt_formats = \
 {
     "Chat-RP": PromptFormat_raw,
     "Llama-chat": PromptFormat_llama,
+    "Llama3-instruct": PromptFormat_llama3,
     "ChatML": PromptFormat_chatml,
     "TinyLlama-chat": PromptFormat_tinyllama,
     "MistralLite": PromptFormat_mistrallite,
