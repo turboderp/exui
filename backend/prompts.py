@@ -387,12 +387,44 @@ class PromptFormat_cohere(PromptFormat):
             text += "<|END_OF_TURN_TOKEN|>"
         return text
 
+class PromptFormat_Llama3(PromptFormat):  
+
+    description = "Llama-3 format"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id,
+             """<|eot_id|>"""]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt and system_prompt.strip() != "":
+            text += "<|begin_of_text|><|start_header_id|>system<|end_header_id|>"
+            text += "\n\n"
+            text += system_prompt
+            text += "<|eot_id|>"
+        text += "<|start_header_id|>user<|end_header_id|>"
+        text += "\n\n"
+        text += prompt
+        text += "<|eot_id|>"
+        text += "<|start_header_id|>assistant<|end_header_id|>"
+        text += "\n\n"
+        if response:
+            text += response
+            text += "<|eot_id|>"
+        return text 
 
 prompt_formats = \
 {
     "Chat-RP": PromptFormat_raw,
     "Llama-chat": PromptFormat_llama,
-    "Llama3-instruct": PromptFormat_llama3,
     "ChatML": PromptFormat_chatml,
     "TinyLlama-chat": PromptFormat_tinyllama,
     "MistralLite": PromptFormat_mistrallite,
@@ -402,6 +434,7 @@ prompt_formats = \
     "OpenChat": PromptFormat_openchat,
     "Gemma": PromptFormat_gemma,
     "Cohere": PromptFormat_cohere,
+    "Llama-3": PromptFormat_Llama3,
 }
 
 def list_prompt_formats():
