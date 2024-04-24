@@ -76,7 +76,7 @@ class PromptFormat_llama(PromptFormat):
 
 class PromptFormat_llama3(PromptFormat):
 
-    description = "Llama-3 instruct template.chat"
+    description = "Llama-3 instruct template."
 
     def __init__(self):
         super().__init__()
@@ -104,6 +104,42 @@ class PromptFormat_llama3(PromptFormat):
         if response:
             text += response
             text += "<|eot_id|>"
+        return text
+
+    def context_bos(self):
+        return True
+
+
+class PromptFormat_phi3(PromptFormat):
+
+    description = "Phi-3 instruct"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.single_id("<|end|>"),
+             tokenizer.single_id("<|endoftext|>"),
+             tokenizer.eos_token_id]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt and system_prompt.strip() != "":
+            text += "<|system|>\n"
+            text += system_prompt
+            text += "<|end|>\n"
+        text += "<|user|>\n"
+        text += prompt
+        text += "<|end|>\n"
+        text += "<|assistant|>\n"
+        if response:
+            text += response
+            text += "<|end|>"
         return text
 
     def context_bos(self):
@@ -402,6 +438,7 @@ prompt_formats = \
     "OpenChat": PromptFormat_openchat,
     "Gemma": PromptFormat_gemma,
     "Cohere": PromptFormat_cohere,
+    "Phi3-instruct": PromptFormat_phi3,
 }
 
 def list_prompt_formats():
