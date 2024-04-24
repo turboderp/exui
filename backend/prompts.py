@@ -124,6 +124,7 @@ class PromptFormat_phi3(PromptFormat):
     def stop_conditions(self, tokenizer, settings):
         return \
             [tokenizer.single_id("<|end|>"),
+             tokenizer.single_id("<|assistant|>"),
              tokenizer.single_id("<|endoftext|>"),
              tokenizer.eos_token_id]
 
