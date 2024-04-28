@@ -18,7 +18,7 @@
         {% include 'svg_icons.html' %}
     </head>
     <body>
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script src="static/node_modules/marked/marked.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'"></script>
         <script type="module" src="{{ url_for('static', filename='util.js') }}"></script>
         <script type="module" src="{{ url_for('static', filename='roles.js') }}"></script>
         <script type="module" src="{{ url_for('static', filename='globals.js') }}"></script>
