@@ -34,6 +34,13 @@ cd exui
 pip install -r requirements.txt
 ```
 
+Optionally, install javascript modules locally, to enable the UI to run when offline (requires Node and npm to be installed):
+```
+cd static
+npm install
+cd ..
+```
+
 Then run the web server with the included server.py:
 
 ```
@@ -43,7 +50,7 @@ python server.py
 Your browser should automatically open on the default IP/port. Config and sessions are stored in `~/exui` by default.
 
 Prebuilt wheels for ExLlamaV2 are available [here](https://github.com/turboderp/exllamav2/releases). Installing 
-the latest version of [Flash Attention](https://github.com/Dao-AILab/flash-attention) is recommended. 
+the latest version of [Flash Attention](https://github.com/Dao-AILab/flash-attention) is recommended.
 
 ### Running in Google Colab
 
