@@ -218,6 +218,9 @@ class PromptFormat_chatml(PromptFormat):
             text += "<|im_end|>\n"
         return text
 
+    def context_bos(self):
+        return True
+
 
 class PromptFormat_tinyllama(PromptFormat_chatml):
 
