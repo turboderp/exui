@@ -120,8 +120,9 @@ export class LabelTextbox {
 }
 
 export class LargeTextbox extends LabelTextbox {
-    constructor(className, placeholder, data, data_id, validateFunc, updateFunc) {
+    constructor(className, placeholder, data, data_id, validateFunc, updateFunc, nowrap = false) {
         super(null, null, className, placeholder, data, data_id, validateFunc, updateFunc, null, true);
+        if (nowrap) this.tb.wrap = "off";
     }
 }
 

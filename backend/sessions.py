@@ -99,6 +99,7 @@ def get_default_session_settings():
         "roles": [ "User", "Assistant", "", "", "", "", "", "" ],
         "system_prompt_default": True,
         "system_prompt": "This is a chat between a curious user and a helpful AI assistant.",
+        "mintokens": 1,
         "maxtokens": 1024,
         "chunktokens": 512,
         "stop_newline": False,
@@ -462,6 +463,16 @@ class Session:
         if speculative_mode == "N-gram":
             generator.speculative_ngram = True
 
+        banned_strings = self.settings.get("banned_strings", "").strip()
+        banned_strings = banned_strings.split("\n")
+        banned_strings = [bs.strip() for bs in banned_strings if bs.strip()]
+        if len(banned_strings) == 0: banned_strings = None
+
+        min_tokens = self.settings.get("mintokens", None)
+        eos_tokens = prompt_format.stop_conditions(tokenizer, self.settings)
+        eos_tokens = [sc for sc in eos_tokens if isinstance(sc, int)]
+        if len(eos_tokens) == 0: eos_tokens = None
+
         # Begin response
 
         generated_tokens = 0
@@ -513,10 +524,13 @@ class Session:
                 gen_settings.filters = [sfilter]
 
                 mt.set_stage("prompt")
-                generator.begin_stream(context_ids,
-                                       gen_settings,
-                                       token_healing = p_healing,
-                                       abort_event = abort_event)
+                generator.begin_stream_ex(
+                    input_ids = context_ids,
+                    gen_settings = gen_settings,
+                    token_healing = p_healing,
+                    abort_event = abort_event,
+                    banned_strings = banned_strings
+                )
                 if abort_event.is_set():
                     abort_event.clear()
                     packet = { "result": "cancel_pre" }
@@ -581,7 +595,13 @@ class Session:
                 context_ids = torch.cat((context_ids, save_tokens), dim = -1)
 
                 mt.set_stage("prompt")
-                generator.begin_stream(context_ids, gen_settings, token_healing = healing, abort_event = abort_event)
+                generator.begin_stream_ex(
+                    input_ids = context_ids,
+                    gen_settings = gen_settings,
+                    token_healing = healing,
+                    abort_event = abort_event,
+                    banned_strings = banned_strings
+                )
                 if abort_event.is_set():
                     break
 
@@ -590,20 +610,26 @@ class Session:
                 chunk_tokens = model.config.max_seq_len - context_ids.shape[-1] - 1
                 mt.set_stage("gen")
 
-            chunk, eos, tokens = generator.stream()
+            temp_ban_tokens = None
+            if min_tokens is not None and generated_tokens < min_tokens:
+                temp_ban_tokens = eos_tokens
+
+            res = generator.stream_ex(
+                ban_tokens = temp_ban_tokens
+            )
             if abort_event.is_set(): break
 
-            save_tokens = torch.cat((save_tokens, tokens), dim = -1)
+            save_tokens = torch.cat((save_tokens, res["chunk_token_ids"]), dim = -1)
 
             generated_tokens += 1
             chunk_tokens -= 1
 
-            chunk_buffer += chunk
+            chunk_buffer += res["chunk"]
 
             now = time.time()
             elapsed = now - last_chunk_time
 
-            if chunk_buffer != "" and (elapsed > 0.05 or eos or generated_tokens == max_new_tokens):
+            if chunk_buffer != "" and (elapsed > 0.05 or res["eos"] or generated_tokens == max_new_tokens):
 
                 packet = {}
                 packet["result"] = "stream_to_block"
@@ -615,7 +641,7 @@ class Session:
                 chunk_buffer = ""
                 last_chunk_time = now
 
-            if eos or generated_tokens == max_new_tokens: break
+            if res["eos"] or generated_tokens == max_new_tokens: break
 
         # Compile metadata
 

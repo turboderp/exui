@@ -23,12 +23,14 @@ export class SessionSettings {
         this.sss_genParams = new controls.CollapsibleSection(null, "Generation parameters");
         this.sss_sampling = new controls.CollapsibleSection(null, "Sampling");
         this.sss_stopConditions = new controls.CollapsibleSection(null, "Stop conditions");
+        this.sss_bannedStrings = new controls.CollapsibleSection(null, "Banned strings");
         this.element.appendChild(this.sss_promptFormat.element);
         this.element.appendChild(this.sss_roles.element);
         this.element.appendChild(this.sss_systemPrompt.element);
         this.element.appendChild(this.sss_genParams.element);
         this.element.appendChild(this.sss_sampling.element);
         this.element.appendChild(this.sss_stopConditions.element);
+        this.element.appendChild(this.sss_bannedStrings.element);
 
         // Prompt format
 
@@ -55,8 +57,10 @@ export class SessionSettings {
 
         // Generation params
 
+        this.sss_i_minTokens   = new controls.SettingsSlider("sss-item-left", "Min tokens",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0,  1, 2048, null,                             this.settings, "mintokens",    () => { this.updateView(true); });
         this.sss_i_maxTokens   = new controls.SettingsSlider("sss-item-left", "Max tokens",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 2048, null,                             this.settings, "maxtokens",    () => { this.updateView(true); });
         this.sss_i_chunkTokens = new controls.SettingsSlider("sss-item-left", "Chunk tokens",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 2048, null,                             this.settings, "chunktokens",  () => { this.updateView(true); });
+        this.sss_genParams.inner.appendChild(this.sss_i_minTokens.element);
         this.sss_genParams.inner.appendChild(this.sss_i_maxTokens.element);
         this.sss_genParams.inner.appendChild(this.sss_i_chunkTokens.element);
 
@@ -100,6 +104,11 @@ export class SessionSettings {
 
         this.sss_i_stopNewline = new controls.CheckboxLabel("sss-item-right clickable", "Stop on newline", this.settings, "stop_newline", () => { this.updateView(true); });
         this.sss_stopConditions.inner.appendChild(this.sss_i_stopNewline.element);
+
+        // Banned strings
+
+        this.sss_i_bannedStrings = new controls.LargeTextbox("sss-item-big-textbox", "Banned strings...", this.settings, "banned_strings", null, () => { this.updateView(true); }, true);
+        this.sss_bannedStrings.inner.appendChild(this.sss_i_bannedStrings.element);
 
         // .
 
@@ -147,6 +156,9 @@ export class SessionSettings {
         let hasRoles = this.settings.prompt_format == "Chat-RP";
         this.sss_roles.setVisible(hasRoles);
         this.sss_stopConditions.setVisible(hasRoles);
+
+        let canMinTokens = this.settings.prompt_format != "Chat-RP";
+        this.sss_i_minTokens.setVisible(canMinTokens);
 
         let opt = globals.g.promptFormatsOptions[this.settings.prompt_format];
         let hasSysPrompt = opt.supports_system_prompt;
