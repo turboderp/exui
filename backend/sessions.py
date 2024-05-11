@@ -468,10 +468,14 @@ class Session:
         banned_strings = [bs.strip() for bs in banned_strings if bs.strip()]
         if len(banned_strings) == 0: banned_strings = None
 
-        min_tokens = self.settings.get("mintokens", None)
-        eos_tokens = prompt_format.stop_conditions(tokenizer, self.settings)
-        eos_tokens = [sc for sc in eos_tokens if isinstance(sc, int)]
-        if len(eos_tokens) == 0: eos_tokens = None
+        if prompt_format.is_instruct():
+            min_tokens = self.settings.get("mintokens", None)
+            eos_tokens = prompt_format.stop_conditions(tokenizer, self.settings)
+            eos_tokens = [sc for sc in eos_tokens if isinstance(sc, int)]
+            if len(eos_tokens) == 0: eos_tokens = None
+        else:
+            eos_tokens = None
+            min_tokens = None
 
         # Begin response
 
