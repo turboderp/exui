@@ -57,9 +57,9 @@ export class SessionSettings {
 
         // Generation params
 
-        this.sss_i_minTokens   = new controls.SettingsSlider("sss-item-left", "Min tokens",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0,  1, 2048, null,                             this.settings, "mintokens",    () => { this.updateView(true); });
-        this.sss_i_maxTokens   = new controls.SettingsSlider("sss-item-left", "Max tokens",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 2048, null,                             this.settings, "maxtokens",    () => { this.updateView(true); });
-        this.sss_i_chunkTokens = new controls.SettingsSlider("sss-item-left", "Chunk tokens",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 2048, null,                             this.settings, "chunktokens",  () => { this.updateView(true); });
+        this.sss_i_minTokens   = new controls.SettingsSlider("sss-item-left", "Min tokens",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0,  1, 8192, null,                             this.settings, "mintokens",    () => { this.updateView(true); });
+        this.sss_i_maxTokens   = new controls.SettingsSlider("sss-item-left", "Max tokens",    "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 8192, null,                             this.settings, "maxtokens",    () => { this.updateView(true); });
+        this.sss_i_chunkTokens = new controls.SettingsSlider("sss-item-left", "Chunk tokens",  "sss-item-mid", "sss-item-right sss-item-textbox-r", 0, 16, 8192, null,                             this.settings, "chunktokens",  () => { this.updateView(true); });
         this.sss_genParams.inner.appendChild(this.sss_i_minTokens.element);
         this.sss_genParams.inner.appendChild(this.sss_i_maxTokens.element);
         this.sss_genParams.inner.appendChild(this.sss_i_chunkTokens.element);
