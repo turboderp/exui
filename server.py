@@ -23,8 +23,13 @@ if os.name == "nt":
     mimetypes.add_type("application/javascript", ".js")
     mimetypes.add_type("text/css", ".css")
 
-app = Flask("ExUI")
-app.static_folder = 'static'
+app_dir = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(
+    "ExUI",
+    template_folder = os.path.join(app_dir, "templates"),
+    static_folder = os.path.join(app_dir, "static")
+)
 api_lock = Lock()
 api_lock_cancel = Lock()
 
