@@ -428,6 +428,42 @@ class PromptFormat_cohere(PromptFormat):
         return text
 
 
+class PromptFormat_granite(PromptFormat):
+
+    description = "Granite"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id,
+             "\n\nQuestion:",
+             ]
+
+    def format(self, prompt, response, system_prompt, settings):
+        text = ""
+        if system_prompt is not None:
+            text += "System:\n"
+            text += system_prompt.strip()
+            text += "\n\n"
+        text += "Question:\n"
+        text += prompt
+        text += "\n\n"
+        text += "Answer:\n"
+        if response:
+            text += response
+            text += "\n\n"
+        return text
+
+    def context_bos(self):
+        return True
+
+
 prompt_formats = \
 {
     "Chat-RP": PromptFormat_raw,
@@ -443,6 +479,7 @@ prompt_formats = \
     "Gemma": PromptFormat_gemma,
     "Cohere": PromptFormat_cohere,
     "Phi3-instruct": PromptFormat_phi3,
+    "Granite": PromptFormat_granite,
 }
 
 def list_prompt_formats():
