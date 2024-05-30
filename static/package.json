@@ -1,0 +1,25 @@
+{
+  "name": "exui",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/turboderp/exui.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/turboderp/exui/issues"
+  },
+  "homepage": "https://github.com/turboderp/exui#readme",
+  "dependencies": {
+    "marked": "^12.0.2"
+  }
+}
