@@ -8,6 +8,8 @@ from exllamav2 import(
     ExLlamaV2Cache,
     ExLlamaV2Cache_8bit,
     ExLlamaV2Cache_Q4,
+    ExLlamaV2Cache_Q6,
+    ExLlamaV2Cache_Q8,
     ExLlamaV2Tokenizer,
 )
 
@@ -299,6 +301,10 @@ class ModelContainer:
             self.cache = ExLlamaV2Cache_8bit(self.model, lazy = auto_split)
         elif self.model_dict["cache_mode"] == "Q4":
             self.cache = ExLlamaV2Cache_Q4(self.model, lazy = auto_split)
+        elif self.model_dict["cache_mode"] == "Q6":
+            self.cache = ExLlamaV2Cache_Q6(self.model, lazy=auto_split)
+        elif self.model_dict["cache_mode"] == "Q8":
+            self.cache = ExLlamaV2Cache_Q8(self.model, lazy=auto_split)
         else:
             raise ValueError("Unknown cache mode: " + self.model_dict["cache_mode"])
 
