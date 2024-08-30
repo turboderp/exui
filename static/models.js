@@ -233,6 +233,7 @@ export class ModelView {
             this.tb_rope_alpha.refresh();
             this.cb_cache_mode.refresh();
             this.tb_chunk_size.refresh();
+            this.tb_tp.refresh();
             this.tb_gpu_split.refresh();
 
             this.cb_speculative.refresh();
@@ -349,6 +350,7 @@ export class ModelView {
         this.tb_rope_alpha = new controls.LabelNumbox("model-view-item-left", "RoPE alpha", "model-view-item-textbox shortright", "", this.modelInfo, "rope_alpha", 0.01, 1000, 2, () => { this.send() } );
         this.cb_cache_mode = new controls.LabelCombobox("model-view-item-left", "Cache mode", "model-view-item-combobox short", [ "FP16", "FP8", "Q4", "Q6", "Q8" ], this.modelInfo, "cache_mode", () => { this.send() } );
         this.tb_chunk_size = new controls.LabelNumbox("model-view-item-left", "Chunk size", "model-view-item-textbox shortright", "", this.modelInfo, "chunk_size", 32, 1024*1024, 0, () => { this.send() } );
+        this.tb_tp = new controls.LabelCheckbox("model-view-item-left", "TP (experimental)", "model-view-item-right checkbox", "Enabled", this.modelInfo, "tensor_p", () => { this.send() } );
         this.tb_gpu_split = new controls.LabelTextbox("model-view-item-left", "GPU split", "model-view-item-textbox short", "8.5,12", this.modelInfo, "gpu_split", null, () => { this.send() }, "gpu_split_auto" );
 //        this.chbk_ngram = new controls.LabelCheckbox("model-view-item-left", "N-gram decoding", "model-view-item-right checkbox", "Enabled", this.modelInfo, "speculative_ngram", () => { this.send() } );
 
@@ -357,6 +359,7 @@ export class ModelView {
         this.element_model.appendChild(this.tb_rope_alpha.element);
         this.element_model.appendChild(this.cb_cache_mode.element);
         this.element_model.appendChild(this.tb_chunk_size.element);
+        this.element_model.appendChild(this.tb_tp.element);
         this.element_model.appendChild(this.tb_gpu_split.element);
 //        this.element_model.appendChild(this.chbk_ngram.element);
 

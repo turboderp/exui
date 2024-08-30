@@ -10,6 +10,7 @@ from exllamav2 import(
     ExLlamaV2Cache_Q4,
     ExLlamaV2Cache_Q6,
     ExLlamaV2Cache_Q8,
+    ExLlamaV2Cache_TP,
     ExLlamaV2Tokenizer,
 )
 
@@ -74,6 +75,7 @@ def get_model_info(data = None):
         m["draft_enabled"] = False
         m["speculative_mode"] = "Draft model"
     if "speculative_mode" not in m: m["speculative_mode"] = "None"
+    if "tensor_p" not in m: m["tensor_p"] = False
     return m
 
 # Remove model config
@@ -281,8 +283,10 @@ class ModelContainer:
         self.model = ExLlamaV2(self.config)
         print("Loading model: " + self.config.model_dir)
 
+        tp = self.model_dict["tensor_p"]
         if self.model_dict["gpu_split_auto"]:
             auto_split = True
+            split = None
         elif self.model_dict["gpu_split"] is None or self.model_dict["gpu_split"].strip() == "":
             auto_split = False
             split = None
@@ -290,32 +294,42 @@ class ModelContainer:
             auto_split = False
             split = [float(alloc) for alloc in self.model_dict["gpu_split"].split(",")]
 
-        if not auto_split:
+        if tp:
+            for value in self.model.load_tp_gen(split, callback_gen = progress_callback):
+                if isinstance(value, str):
+                    yield value
+
+        elif not auto_split:
             for value in self.model.load_gen(split, callback_gen = progress_callback):
                 if isinstance(value, str):
                     yield value
 
         if self.model_dict["cache_mode"] == "FP16":
-            self.cache = ExLlamaV2Cache(self.model, lazy = auto_split)
+            cache_type = ExLlamaV2Cache
         elif self.model_dict["cache_mode"] == "FP8":
-            self.cache = ExLlamaV2Cache_8bit(self.model, lazy = auto_split)
+            cache_type = ExLlamaV2Cache_8bit
         elif self.model_dict["cache_mode"] == "Q4":
-            self.cache = ExLlamaV2Cache_Q4(self.model, lazy = auto_split)
+            cache_type = ExLlamaV2Cache_Q4
         elif self.model_dict["cache_mode"] == "Q6":
-            self.cache = ExLlamaV2Cache_Q6(self.model, lazy=auto_split)
+            cache_type = ExLlamaV2Cache_Q6
         elif self.model_dict["cache_mode"] == "Q8":
-            self.cache = ExLlamaV2Cache_Q8(self.model, lazy=auto_split)
+            cache_type = ExLlamaV2Cache_Q8
         else:
             raise ValueError("Unknown cache mode: " + self.model_dict["cache_mode"])
 
-        if auto_split:
+        if tp:
+            self.cache = ExLlamaV2Cache_TP(self.model, base = cache_type)
+        else:
+            self.cache = cache_type(self.model, lazy = auto_split)
+
+        if auto_split and not tp:
             reserve = [96 * 1024**2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             yield from self.model.load_autosplit_gen(self.cache, reserve_vram = reserve, last_id_only = True, callback_gen = progress_callback)
 
         # Test VRAM allocation with a full-length forward pass
 
         input_ids = torch.zeros((1, self.config.max_input_len), dtype = torch.long)
-        self.model.forward(input_ids, cache = self.cache, preprocess_only = True)
+        # self.model.forward(input_ids, cache = self.cache, preprocess_only = True)
 
         # Create generator
 
