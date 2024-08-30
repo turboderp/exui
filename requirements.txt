@@ -1,5 +1,5 @@
 torch>=2.1.0
 pynvml
-exllamav2>=0.1.5
+exllamav2>=0.2.0
 Flask>=2.3.2
 waitress>=2.1.2
