@@ -709,6 +709,14 @@ class ChatBlock {
 
         span = document.createElement("span");
         span.classList.add("action");
+        span.innerHTML = "⧉ Copy";
+        this.actdiv.appendChild(span);
+        span.addEventListener('click', () => {
+            this.copyBlock();
+        });
+
+        span = document.createElement("span");
+        span.classList.add("action");
         span.innerHTML = "🖉 Edit";
         this.actdiv.appendChild(span);
         span.addEventListener('click', () => {
@@ -759,6 +767,15 @@ class ChatBlock {
             this.parent.removeBlock(this, deletefromhere);
         });
     }
+
+    copyBlock() {
+    const text = this.block.text;
+    navigator.clipboard.writeText(text).then(() => {
+        console.log('Text copied to clipboard');
+    }).catch(err => {
+        console.error('Error in copying text: ', err);
+    });
+}
 
     editBlock() {
         this.element.classList.add("hidden_h");
