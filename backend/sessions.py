@@ -533,7 +533,9 @@ class Session:
                     gen_settings = gen_settings,
                     token_healing = p_healing,
                     abort_event = abort_event,
-                    banned_strings = banned_strings
+                    banned_strings = banned_strings,
+                    filters = gen_settings.filters,
+                    filter_prefer_eos = gen_settings.filters
                 )
                 if abort_event.is_set():
                     abort_event.clear()
