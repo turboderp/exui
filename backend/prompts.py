@@ -73,6 +73,75 @@ class PromptFormat_llama(PromptFormat):
             text += "</s>"
         return text
 
+class PromptFormat_mistral(PromptFormat):
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def is_instruct(self):
+        return True
+
+    def stop_conditions(self, tokenizer, settings):
+        return \
+            [tokenizer.eos_token_id]
+
+    def context_bos(self):
+        return True
+
+class PromptFormat_mistralv1(PromptFormat_mistral):
+    """
+    <s> [INST] user message [/INST] assistant message</s> [INST] new user message [/INST]
+    """
+    description = "Mistral tokenizer v1"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def format(self, p, r, sp, settings):
+        if sp and sp.strip():
+            text = f" [INST] {sp.strip()}\n\n {p.strip()} [/INST]"
+        else:
+            text = f" [INST] {p.strip()} [/INST]"
+        if r:
+            text += f" {r.strip()}</s>"
+        return text
+
+class PromptFormat_mistralv2v3(PromptFormat_mistral):
+    """
+    <s>[INST] user message[/INST] assistant message</s>[INST] new user message[/INST]
+    """
+    description = "Mistral tokenizer v2/v3"
+
+    def __init__(self):
+        super().__init__()
+        pass
+
+    def format(self, p, r, sp, settings):
+        if sp and sp.strip():
+            text = f"[INST] {sp.strip()}\n\n {p.strip()}[/INST]"
+        else:
+            text = f"[INST] {p.strip()}[/INST]"
+        if r:
+            text += f" {r.strip()}</s>"
+        return text
+
+class PromptFormat_mistralTekken(PromptFormat_mistral):
+    """
+    <s>[INST]user message[/INST]assistant message</s>[INST]new user message[/INST]
+    """
+    description = "Mistral tokenizer V3 (Tekken)"
+
+    def format(self, p, r, sp, settings):
+        if sp and sp.strip():
+            text = f"[INST]{sp.strip()}\n\n{p.strip()}[/INST]"
+        else:
+            text = f"[INST]{p.strip()}[/INST]"
+        if r:
+            text += f"{r.strip()}</s>"
+        return text
+
 
 class PromptFormat_llama3(PromptFormat):
 
@@ -480,6 +549,9 @@ prompt_formats = \
     "Cohere": PromptFormat_cohere,
     "Phi3-instruct": PromptFormat_phi3,
     "Granite": PromptFormat_granite,
+    "Mistral V1": PromptFormat_mistralv1,
+    "Mistral V2/V3": PromptFormat_mistralv2v3,
+    "Mistral V3 (Tekken)": PromptFormat_mistralTekken,
 }
 
 def list_prompt_formats():
